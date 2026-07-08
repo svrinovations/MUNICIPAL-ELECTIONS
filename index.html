@@ -1,0 +1,2969 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>ELECTION PILOT | Mana Anna - Mana Vijay Anna Campaign</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js">
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --primary: #0f2b3d;
+            --primary-light: #1a4a6a;
+            --accent: #e85d3a;
+            --accent-light: #f07a5a;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --gray: #f1f5f9;
+            --dark: #0a1a2a;
+            --glass: rgba(255, 255, 255, 0.12);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+        .app-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+            padding-bottom: 70px;
+        }
+        .app-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 14px 16px 12px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+        }
+        .app-header h1 {
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+        .app-header h1 span {
+            font-weight: 300;
+            opacity: 0.7;
+            font-size: 11px;
+        }
+        .developer-badge {
+            font-size: 10px;
+            background: var(--glass);
+            padding: 4px 14px;
+            border-radius: 30px;
+            margin-top: 4px;
+            display: inline-block;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .developer-badge i {
+            font-size: 10px;
+            margin-right: 4px;
+        }
+        .lang-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .lang-btn {
+            background: var(--glass);
+            border: none;
+            padding: 5px 18px;
+            border-radius: 30px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .lang-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .page {
+            display: none;
+            padding: 16px 14px 20px 14px;
+            animation: fadeIn 0.3s ease;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid #eef2f6;
+            transition: box-shadow 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 40px;
+            font-weight: 600;
+            width: 100%;
+            margin: 6px 0;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .btn-accent {
+            background: var(--accent);
+        }
+        .btn-accent:hover {
+            background: #d04e2a;
+        }
+        .btn-outline {
+            background: white;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-success {
+            background: var(--success);
+        }
+        .btn-warning {
+            background: var(--warning);
+        }
+        .btn-danger {
+            background: #ef4444;
+        }
+        .btn-whatsapp {
+            background: #25D366;
+        }
+        .btn-sm {
+            padding: 6px 14px;
+            width: auto;
+            font-size: 12px;
+            display: inline-flex;
+            margin: 3px;
+            gap: 4px;
+        }
+        .input-group {
+            margin-bottom: 12px;
+        }
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e8edf2;
+            border-radius: 16px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border 0.2s;
+            background: #fafbfc;
+        }
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+        }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 12px 0;
+        }
+        .stat-card {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            border-radius: 20px;
+            text-align: center;
+        }
+        .progress-bar {
+            height: 8px;
+            background: #e8edf2;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-light));
+            width: 0%;
+            transition: width 0.6s ease;
+        }
+        .candidate-photo {
+            width: 130px;
+            height: 170px;
+            border-radius: 24px;
+            object-fit: cover;
+            margin: 0 auto 12px auto;
+            display: block;
+            border: 4px solid white;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+            display: flex;
+            justify-content: space-around;
+            padding: 6px 0 10px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            z-index: 100;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .nav-item {
+            text-align: center;
+            font-size: 10px;
+            color: #94a3b8;
+            padding: 4px 0;
+            flex: 1;
+            cursor: pointer;
+            transition: color 0.2s;
+            border-radius: 12px;
+            padding: 6px 0;
+        }
+        .nav-item i {
+            font-size: 22px;
+            display: block;
+            margin-bottom: 1px;
+        }
+        .nav-item.active {
+            color: var(--accent);
+            font-weight: 600;
+            background: rgba(232, 93, 58, 0.08);
+        }
+        .nav-item:hover {
+            color: var(--primary);
+        }
+        .whatsapp-float {
+            position: fixed;
+            bottom: 75px;
+            right: 16px;
+            background: #25D366;
+            color: white;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            z-index: 99;
+            box-shadow: 0 4px 16px rgba(37, 211, 102, 0.35);
+            text-decoration: none;
+            border: 2px solid white;
+            transition: transform 0.2s;
+        }
+        .whatsapp-float:hover {
+            transform: scale(1.05);
+        }
+        .footer-text {
+            text-align: center;
+            font-size: 9px;
+            color: #94a3b8;
+            padding: 8px;
+        }
+        h2 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        h3 {
+            font-size: 15px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        .text-accent {
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .admin-badge {
+            background: var(--accent);
+            color: white;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 10px;
+            margin-left: 8px;
+        }
+        .pending-badge {
+            background: #f59e0b;
+            color: white;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 10px;
+        }
+        .approved-badge {
+            background: #10b981;
+            color: white;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 10px;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .gallery-grid img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid #eef2f6;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .gallery-grid img:hover {
+            transform: scale(1.02);
+        }
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        .video-grid video {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid #eef2f6;
+            background: #000;
+            cursor: pointer;
+        }
+        .event-card {
+            border-left: 4px solid var(--accent);
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            background: #f8fafc;
+            border-radius: 12px;
+            transition: background 0.2s;
+        }
+        .event-card:hover {
+            background: #f1f4f8;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .admin-only {
+            display: none;
+        }
+        .admin-only.active {
+            display: block;
+        }
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-overlay.active {
+            display: flex;
+        }
+        .login-box {
+            background: white;
+            border-radius: 28px;
+            padding: 32px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+        .login-box h2 {
+            text-align: center;
+            color: var(--dark);
+        }
+        .issue-detail {
+            font-size: 13px;
+            color: #475569;
+            margin: 4px 0;
+        }
+        .issue-detail i {
+            width: 20px;
+            color: var(--primary);
+        }
+        .report-summary {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin: 4px 0;
+        }
+        .bottom-nav.admin-mode {
+            display: none !important;
+        }
+        .search-box {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .search-box select {
+            flex: 1;
+        }
+        .admin-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 12px 0;
+        }
+        .admin-stat-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 15px;
+            border-radius: 20px;
+            text-align: center;
+        }
+        .admin-stat-card span {
+            font-size: 22px;
+            font-weight: 700;
+            display: block;
+            margin-top: 4px;
+        }
+        .team-msg-box {
+            background: #f0f4ff;
+            border: 1px solid #93c5fd;
+            border-radius: 12px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+        .badge-all {
+            background: #8b5cf6;
+            color: white;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 10px;
+        }
+        .gallery-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .gallery-item .delete-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.8;
+        }
+        .gallery-item .delete-btn:hover {
+            opacity: 1;
+        }
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .lightbox.active {
+            display: flex;
+        }
+        .lightbox img {
+            max-width: 95%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+        .lightbox video {
+            max-width: 95%;
+            max-height: 90%;
+            border-radius: 12px;
+        }
+        .lightbox .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .lightbox .close-btn:hover {
+            opacity: 1;
+        }
+        .team-msg-box .del-msg {
+    float: right;
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-left: 10px;
+    display: inline-block;
+}       .sync-status {
+            font-size: 11px;
+            color: #94a3b8;
+            text-align: center;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .sync-status .fa-spinner {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .firebase-connected {
+            color: #10b981;
+        }
+        .firebase-disconnected {
+            color: #ef4444;
+        }
+        .badge-premium {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 9px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 20px 10px;
+            color: #94a3b8;
+        }
+        .empty-state i {
+            font-size: 36px;
+            margin-bottom: 10px;
+            display: block;
+            opacity: 0.4;
+        }
+        .firebase-email-hint {
+            font-size: 11px;
+            color: #64748b;
+            text-align: center;
+            margin-top: 4px;
+        }
+        .auth-error {
+            color: #ef4444;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 6px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+
+        <!-- Admin Login Overlay (Firebase Auth) -->
+        <div id="loginOverlay" class="login-overlay">
+            <div class="login-box">
+                <h2 style="text-align:center;">🔐 Admin Login</h2>
+                <p style="text-align:center;font-size:13px;color:#64748b;margin-bottom:16px;">Sign in with Firebase</p>
+                <div class="input-group"><input type="email" id="adminEmail" placeholder="Email" value="admin@campaign.com"></div>
+                <div class="input-group"><input type="password" id="adminPass" placeholder="Password"></div>
+                <button type="button" id="adminLoginBtn" class="btn"><i class="fas fa-sign-in-alt"></i> Login</button>
+                <div id="authError" class="auth-error">Invalid credentials. Please try again.</div>
+                <p style="text-align:center;font-size:11px;color:#94a3b8;margin-top:8px;">Powered by Firebase Auth</p>
+            </div>
+        </div>
+
+        <div class="app-header">
+            <h1>🗳️ ELECTION PILOT <span>|</span> <span style="font-size:11px;font-weight:400;">SVR Innovation</span></h1>
+            <div class="developer-badge"><i class="fas fa-phone-alt"></i> Cell: 8500172644</div>
+            <p style="font-size:11px;opacity:0.85;margin-top:4px;" id="headerSub">Corporator Election Campaign</p>
+            <div style="display:flex;justify-content:center;gap:8px;margin-top:6px;flex-wrap:wrap;">
+                <span id="adminStatus" style="font-size:10px;background:var(--glass);padding:3px 14px;border-radius:30px;border:1px solid rgba(255,255,255,0.08);">👤 Public</span>
+                <button type="button" id="adminToggleBtn" class="lang-btn" style="font-size:10px;padding:3px 14px;">🔑 Admin</button>
+                <button type="button" id="adminLogoutBtn" class="lang-btn hidden" style="font-size:10px;padding:3px 14px;background:#ef4444;border-color:#ef4444;">🚪 Logout</button>
+            </div>
+            <div class="lang-buttons">
+                <button type="button" class="lang-btn" data-lang="te">తెలుగు</button>
+                <button type="button" class="lang-btn active" data-lang="en">English</button>
+            </div>
+            <div class="sync-status" id="syncStatus"><i class="fas fa-cloud"></i> <span id="syncText">Connecting to Firebase...</span></div>
+        </div>
+
+        <!-- PAGE 1: HOME -->
+        <div id="page-home" class="page active">
+            <div class="card" style="text-align:center">
+                <img id="candidatePhoto" class="candidate-photo" src="What'sapp-Image.jpeg" alt="Vijay Anna Photo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22130%22 height=%22170%22%3E%3Crect width=%22130%22 height=%22170%22 fill=%22%231e4a6b%22/%3E%3Ctext x=%2265%22 y=%2290%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2220%22 font-family=%22Arial%22%3E📷%3C/text%3E%3C/svg%3E'">
+                <h2 id="candidateName" style="font-size:20px;">Mana Vijay Anna</h2>
+                <p id="slogan" class="text-accent" style="font-size:14px;">"My Promise - Your Trust | Development First"</p>
+                <div style="display:flex;gap:10px;margin:14px 0;">
+                    <a href="tel:+919396806527" class="btn" style="width:auto;flex:1;background:var(--primary);"><i class="fas fa-phone"></i> <span id="callText">Call</span></a>
+                    <a href="#" id="waLink" class="btn btn-accent" style="width:auto;flex:1;"><i class="fab fa-whatsapp"></i> <span id="waText">WhatsApp</span></a>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <button type="button" class="btn-outline" style="flex:1;padding:10px;" onclick="goToPage('page-volunteer')"><i class="fas fa-hands-helping"></i> <span id="volBtnText">Join Volunteer</span></button>
+                    <button type="button" class="btn-outline" style="flex:1;padding:10px;" onclick="goToPage('page-issue')"><i class="fas fa-exclamation-triangle"></i> <span id="issueBtnText">Report Issue</span></button>
+                </div>
+            </div>
+            <div class="card"><h3 id="promisesTitle">🎯 Key Promises</h3>
+                <ul style="margin-left:20px;list-style:none;padding:0;" id="promisesList">
+                    <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">✅ 24x7 Clean Water Supply</li>
+                    <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">✅ Pothole-free Roads</li>
+                    <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">✅ Door-to-door Garbage Collection</li>
+                    <li style="padding:6px 0;">✅ Women Safety - CCTV Cameras</li>
+                </ul>
+            </div>
+            <div class="card"><h3>📅 Upcoming Events</h3><div id="publicEventsList"></div></div>
+        </div>
+
+        <!-- PAGE 2: DOOR TO DOOR -->
+        <div id="page-doortodoor" class="page">
+            <div class="card"><h3 id="d2dTitle">🏠 House Visit Entry</h3>
+                <div class="input-group"><input id="houseNo" placeholder="House Number / Name"></div>
+                <div class="input-group"><input id="familyName" placeholder="Family Name"></div>
+                <div class="input-group"><input id="mobileD2D" placeholder="Mobile Number"></div>
+                <div class="input-group">
+                    <select id="visitStatus">
+                        <option value="Visited">✅ Visited</option>
+                        <option value="Not Visited">⏳ Not Visited</option>
+                        <option value="Follow-up">🔄 Follow-up Required</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <select id="volunteerNameD2D"><option value="">Select Volunteer</option></select>
+                </div>
+                <button type="button" id="saveVisitBtn" class="btn"><i class="fas fa-save"></i> <span id="saveText">Save Visit</span></button>
+            </div>
+            <button type="button" id="exportVisitsBtn" class="btn-outline" style="margin-top:8px;"><i class="fas fa-download"></i> <span id="exportText">Export CSV</span></button>
+        </div>
+
+        <!-- PAGE 3: ISSUES -->
+        <div id="page-issue" class="page">
+            <div class="card"><h3 id="issueFormTitle">⚠️ Public Issue Registration</h3>
+                <div class="input-group"><input id="issuePersonName" placeholder="Your Name"></div>
+                <div class="input-group"><input id="issuePersonMobile" placeholder="Mobile Number"></div>
+                <div class="input-group"><input id="issueArea" placeholder="Colony / Ward"></div>
+                <div class="input-group"><select id="issueCategory">
+                        <option value="Roads">Roads</option><option value="Drainage">Drainage</option>
+                        <option value="Water Supply">Water Supply</option><option value="Street Lights">Street Lights</option>
+                        <option value="Garbage">Garbage</option><option value="Parks">Parks</option><option value="Others">Others</option>
+                    </select></div>
+                <div class="input-group"><textarea id="issueDesc" rows="2" placeholder="Issue Description"></textarea></div>
+                <button type="button" id="saveIssueBtn" class="btn"><span id="submitIssueText">Submit Issue</span></button>
+            </div>
+        </div>
+
+        <!-- PAGE 4: VOLUNTEERS -->
+        <div id="page-volunteer" class="page">
+            <div class="card"><h3 id="volRegTitle">🤝 Volunteer Registration</h3>
+                <div class="input-group"><input id="volNameReg" placeholder="Full Name"></div>
+                <div class="input-group"><input id="volMobileReg" placeholder="Mobile Number"></div>
+                <div class="input-group"><input id="volAreaReg" placeholder="Area / Booth"></div>
+                <button type="button" id="addVolunteerRegBtn" class="btn"><span id="joinVolText">Join as Volunteer</span></button>
+            </div>
+            <div id="volunteersList"></div>
+            <div class="card"><h3 id="dailyReportTitle">📋 Daily Activity Report</h3>
+                <div class="input-group"><select id="dailyVolName"><option value="">Select Your Name</option></select></div>
+                <div class="input-group"><input id="housesVisitedDaily" type="number" placeholder="How many houses visited today?"></div>
+                <div class="input-group"><textarea id="dailyNotes" rows="2" placeholder="Special notes / issues collected"></textarea></div>
+                <button type="button" id="submitDailyReportBtn" class="btn-accent"><span id="submitReportText">Submit Report</span></button>
+            </div>
+            <div id="dailyReportsList"></div>
+        </div>
+
+        <!-- PAGE 5: GALLERY -->
+        <div id="page-gallery" class="page">
+            <div class="card"><h3 id="galleryPublicTitle">🖼️ Gallery</h3>
+                <div id="publicGalleryEvents"></div>
+            </div>
+        </div>
+
+        <!-- ADMIN PAGE -->
+        <div id="page-admin" class="page admin-only">
+            <div class="card">
+                <h3>🔐 Admin Dashboard <span class="admin-badge">Admin</span></h3>
+                <div class="admin-stat-grid">
+                    <div class="admin-stat-card">🏘️ <span id="adminTotalLabel">Total Houses</span><span id="adminTotalHouses">5000</span></div>
+                    <div class="admin-stat-card">✅ <span id="adminCoveredLabel">Covered</span><span id="adminCoveredHouses">0</span></div>
+                    <div class="admin-stat-card">🔄 <span id="adminFollowLabel">Follow-up</span><span id="adminFollowupCount">0</span></div>
+                    <div class="admin-stat-card">⚠️ <span id="adminIssuesLabel">Issues</span><span id="adminIssueCount">0</span></div>
+                </div>
+                <div style="margin-top:10px;"><div class="progress-bar"><div class="progress-fill" id="adminCoverageFill"></div></div><p id="adminCoverageText" style="font-size:13px;color:#64748b;">Campaign Progress: 0%</p></div>
+            </div>
+
+            <div class="card">
+                <h3>👥 Register Team Member <span class="admin-badge">Admin</span></h3>
+                <div class="input-group"><input id="adminVolName" placeholder="Full Name"></div>
+                <div class="input-group"><input id="adminVolMobile" placeholder="Mobile Number"></div>
+                <div class="input-group"><input id="adminVolArea" placeholder="Area / Booth"></div>
+                <button type="button" id="adminAddVolunteerBtn" class="btn btn-success"><i class="fas fa-user-plus"></i> <span id="adminAddVolText">Add Team Member</span></button>
+            </div>
+
+            <div class="card">
+                <h3>📨 Send Message to Team <span class="admin-badge">Admin</span></h3>
+                <p style="font-size:13px;color:#64748b;margin-bottom:12px;">Send WhatsApp message to individual team members or broadcast to all</p>
+                <div class="input-group">
+                    <select id="adminTeamMemberSelect">
+                        <option value="all">📢 Send to ALL Team Members</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <select id="adminMsgTemplate">
+                        <option value="default">📝 Default Message</option>
+                        <option value="meeting">📅 Team Meeting Invitation</option>
+                        <option value="task">📋 Task Assignment</option>
+                        <option value="update">🔄 Campaign Update</option>
+                        <option value="custom">✏️ Custom Message</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <textarea id="adminCustomMessage" rows="4" placeholder="Type your message here...">🙏 Hello Team! Great work on the campaign. Let's continue our door-to-door efforts. We are achieving our targets. Keep up the spirit! Jai Hind! 🇮🇳</textarea>
+                </div>
+                <button type="button" id="adminSendTeamMsgBtn" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> <span id="adminSendMsgText">Send WhatsApp Message</span></button>
+                <div id="adminSendStatus" style="margin-top:8px;font-size:13px;"></div>
+            </div>
+
+            <div class="card">
+                <h3>📨 Team Message History <span class="admin-badge">Admin</span></h3>
+                <div id="adminTeamMsgHistory"></div>
+            </div>
+
+            <div class="card"><h3>🏠 All House Visits <span class="admin-badge">Admin</span></h3><div id="adminAllVisits"></div></div>
+            <div class="card"><h3>📋 All Daily Reports <span class="admin-badge">Admin</span></h3><div id="adminAllReports"></div></div>
+            <div class="card"><h3>⚠️ All Reported Issues <span class="admin-badge">Admin</span></h3><div id="adminIssuesList"></div></div>
+            <div class="card"><h3>📋 Volunteer Approvals <span class="admin-badge">Admin</span></h3><div id="pendingVolunteersList"></div></div>
+            <div class="card"><h3>✅ Approved Volunteers <span class="admin-badge">Admin</span></h3><div id="approvedVolunteersList"></div></div>
+            <div class="card">
+                <h3>📊 Volunteer Reports <span class="admin-badge">Admin</span></h3>
+                <div class="search-box">
+                    <select id="adminReportFilter"><option value="all">All Volunteers</option></select>
+                    <button class="btn btn-sm btn-outline" style="width:auto;padding:6px 16px;" onclick="filterAdminReports()">Search</button>
+                </div>
+                <div id="adminFilteredReports"></div>
+            </div>
+            <div class="card"><h3>📊 Complete Reports <span class="admin-badge">Admin</span></h3><div id="adminFullReports"></div></div>
+
+            <div class="card">
+                <h3>📅 Manage Events</h3>
+                <div class="input-group"><input id="eventTitle" placeholder="Event Title"></div>
+                <div class="input-group"><input id="eventDate" type="date"></div>
+                <div class="input-group"><textarea id="eventDesc" rows="2" placeholder="Event Description"></textarea></div>
+                <button type="button" id="addEventBtn" class="btn"><span>Add Event</span></button>
+                <div id="adminEventsList" style="margin-top:10px;"></div>
+            </div>
+
+            <div class="card">
+                <h3>🖼️ Manage Gallery <span class="badge-premium">Images & Videos</span></h3>
+                <div class="input-group"><input type="file" id="galleryMediaInput" accept="image/*,video/*"></div>
+                <div class="input-group"><input id="galleryCaption" placeholder="Caption"></div>
+                <button type="button" id="uploadGalleryBtn" class="btn btn-accent"><i class="fas fa-upload"></i> <span>Upload Media</span></button>
+                <div id="adminGalleryGrid" class="gallery-grid" style="margin-top:10px;"></div>
+                <div id="adminVideoGrid" class="video-grid" style="margin-top:10px;"></div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav" id="bottomNav">
+            <div class="nav-item active" data-page="page-home"><i class="fas fa-home"></i><span id="navHome">Home</span></div>
+            <div class="nav-item" data-page="page-doortodoor"><i class="fas fa-door-open"></i><span id="navD2D">Door to Door</span></div>
+            <div class="nav-item" data-page="page-issue"><i class="fas fa-exclamation-triangle"></i><span id="navIssues">Issues</span></div>
+            <div class="nav-item" data-page="page-volunteer"><i class="fas fa-users"></i><span id="navVol">Volunteers</span></div>
+            <div class="nav-item" data-page="page-gallery"><i class="fas fa-images"></i><span id="navGallery">Gallery</span></div>
+        </div>
+        <div class="footer-text">📢 Campaign Team - Powered by Firebase</div>
+    </div>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <button class="close-btn" onclick="closeLightbox()">&times;</button>
+        <img id="lightboxImg" src="" alt="" style="display:none;">
+        <video id="lightboxVideo" controls style="display:none;"></video>
+    </div>
+
+    <a href="#" id="whatsappFloatBtn" class="whatsapp-float"><i class="fab fa-whatsapp"></i></a>
+   
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+        // ============================================================
+        // FIREBASE CONFIG - REPLACE WITH YOUR FIREBASE PROJECT CONFIG
+        // ============================================================
+        const firebaseConfig = {
+    apiKey: "AIzaSyCJZVWQHl5P89WbSTlT3LWRw6z8MEJdrIg",
+    authDomain: "municipal-elections-37645.firebaseapp.com",
+    projectId: "municipal-elections-37645",
+    storageBucket: "municipal-elections-37645.firebasestorage.app",
+    messagingSenderId: "456753105508",
+    appId: "1:456753105508:web:fb953d53635cfc1ffb6d71",
+    measurementId: "G-ZR18EYGK2Z"
+  };
+
+        // ============================================================
+        // FIREBASE INIT
+        // ============================================================
+        let firebaseApp, auth, db, storage;
+        let useFirebase = false;
+        let currentUser = null;
+        let authStateChecked = false;
+        let firestoreListeners = [];
+        let isAdmin = false;
+
+        // DOM refs
+        const syncStatus = document.getElementById('syncStatus');
+        const syncText = document.getElementById('syncText');
+
+        try {
+            if (firebaseConfig.apiKey.includes("YOUR_API_KEY")) {
+                console.warn('⚠️ Please replace firebaseConfig with your actual Firebase project config!');
+                syncText.textContent = 'Setup Required';
+                syncStatus.className = 'sync-status firebase-disconnected';
+                useFirebase = false;
+            } else {
+                firebaseApp = firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.firestore();
+                storage = firebase.storage();
+
+                // Enable offline persistence
+                db.enablePersistence({ synchronizeTabs: true })
+                    .catch(function(err) {
+                        console.warn('Firestore persistence:', err.message);
+                    });
+
+                useFirebase = true;
+                console.log('✅ Firebase initialized');
+                syncText.textContent = 'Connecting...';
+                syncStatus.className = 'sync-status';
+
+                // Auth state listener
+                auth.onAuthStateChanged(function(user) {
+                    authStateChecked = true;
+                    if (user) {
+                        currentUser = user;
+                        isAdmin = true;
+                        console.log('✅ Admin logged in:', user.email);
+                        onAdminLoginSuccess();
+                    } else {
+                        currentUser = null;
+                        isAdmin = false;
+                        console.log('👤 Not logged in');
+                        onAdminLogout();
+                    }
+                });
+
+                // Start Firestore listeners
+                startFirestoreListeners();
+            }
+        } catch (e) {
+            console.warn('⚠️ Firebase init error:', e.message);
+            alert("Firebase initialization error: " + e.message);
+            syncText.textContent = 'Firebase Error';
+            syncStatus.className = 'sync-status firebase-disconnected';
+            useFirebase = false;
+        }
+
+        // ============================================================
+        // DATA
+        // ============================================================
+        var appData = {
+            visits: [],
+            issues: [],
+            volunteers: [],
+            dailyReports: [],
+            events: [],
+            gallery: [],
+            teamMessages: [],
+            config: {
+                candidateNameTe: "మన విజయ్ అన్న",
+                candidateNameEn: "Mana Vijay Anna",
+                sloganTe: '"నా హామీ - మీ నమ్మకం | అభివృద్ధి మొదట"',
+                sloganEn: '"My Promise - Your Trust | Development First"',
+                whatsapp: "+919396806527",
+                photo: "What'sapp-Image.jpeg"
+            }
+        };
+
+        var currentLang = "en";
+        var currentText = {};
+
+        // TRANSLATIONS (same as original)
+        var TE = {
+            headerSub: "కార్పొరేటర్ ఎన్నికల ప్రచారం",
+            call: "కాల్",
+            wa: "WhatsApp",
+            vol: "వాలంటీర్ చేరండి",
+            issue: "సమస్య నమోదు",
+            promises: "🎯 ప్రధాన వాగ్దానాలు",
+            promisesList: ["✅ 24x7 స్వచ్ఛమైన నీటి సరఫరా", "✅ గుంతలు లేని రోడ్లు", "✅ ఇంటింటికీ చెత్త సేకరణ",
+                "✅ మహిళా భద్రత - సీసీ కెమెరాలు"
+            ],
+            total: "మొత్తం ఇళ్లు",
+            covered: "కవర్ అయినవి",
+            follow: "ఫాలోఅప్",
+            issuesLabel: "సమస్యలు",
+            d2d: "🏠 ఇంటి వివరాలు నమోదు",
+            save: "సేవ్ చేయండి",
+            export: "CSV ఎగుమతి",
+            housePlace: "ఇంటి నంబర్ / పేరు",
+            familyPlace: "కుటుంబ పేరు",
+            mobilePlace: "మొబైల్ నంబర్",
+            volPlace: "వాలంటీయర్ ఎంచుకోండి",
+            issueForm: "⚠️ ప్రజల సమస్య నమోదు",
+            submit: "సమస్య నమోదు చేయండి",
+            namePlace: "మీ పేరు",
+            mobilePlace2: "మొబైల్",
+            areaPlace: "కాలనీ / వార్డు",
+            descPlace: "సమస్య వివరాలు",
+            volReg: "🤝 వాలంటీర్ రిజిస్ట్రేషన్",
+            join: "వాలంటీర్‌గా చేరండి",
+            fullNamePlace: "పూర్తి పేరు",
+            volMobilePlace: "మొబైల్ నంబర్",
+            volAreaPlace: "ప్రాంతం / బూత్",
+            daily: "📋 డైలీ రిపోర్ట్",
+            report: "రిపోర్ట్ సమర్పించండి",
+            dailyNamePlace: "మీ పేరు ఎంచుకోండి",
+            housesPlace: "ఈ రోజు ఎన్ని ఇళ్లు సందర్శించారు?",
+            notesPlace: "ప్రత్యేక విషయాలు / సమస్యలు",
+            navHome: "హోమ్",
+            navD2D: "డోర్ టు డోర్",
+            navIssues: "సమస్యలు",
+            navVol: "వాలంటీర్లు",
+            navGallery: "గ్యాలరీ",
+            coverage: "ప్రచార పురోగతి",
+            status: "స్థితి",
+            volunteer: "వాలంటీర్",
+            noVisits: "ఇంకా సందర్శనలు లేవు",
+            noIssues: "సమస్యలు లేవు",
+            noVols: "వాలంటీర్లు లేరు",
+            noReports: "రిపోర్ట్లు లేవు",
+            housesVisited: "ఇళ్లు సందర్శించారు",
+            housesUnit: "ఇళ్లు",
+            savedMsg: "సేవ్ చేయబడింది",
+            submittedMsg: "నమోదైంది",
+            pending: "పెండింగ్",
+            approved: "ఆమోదించబడింది",
+            approve: "ఆమోదించు",
+            noPending: "పెండింగ్ వాలంటీర్లు లేరు",
+            events: "ఈవెంట్స్",
+            gallery: "గ్యాలరీ",
+            noEvents: "ఈవెంట్స్ లేవు",
+            noGallery: "గ్యాలరీ ఖాళీగా ఉంది",
+            admin: "అడ్మిన్",
+            public: "పబ్లిక్",
+            login: "లాగిన్",
+            logout: "లాగౌట్",
+            noIssuesReported: "ఇంకా సమస్యలు నమోదు కాలేదు",
+            fullReport: "పూర్తి నివేదిక",
+            totalVisits: "మొత్తం సందర్శనలు",
+            totalReports: "మొత్తం రిపోర్ట్లు",
+            delete: "తొలగించు",
+            confirmDelete: "మీరు తొలగించాలనుకుంటున్నారా?",
+            noVisitsYet: "ఇంకా సందర్శనలు లేవు",
+            noReportsYet: "ఇంకా రిపోర్ట్లు లేవు",
+            approvedVols: "ఆమోదించిన వాలంటీర్లు",
+            noApprovedVols: "ఆమోదించిన వాలంటీర్లు లేరు",
+            allVols: "అందరు వాలంటీర్లు",
+            reportBy: "రిపోర్ట్ వారీగా",
+            sendMsg: "WhatsApp సందేశం పంపు",
+            selectMember: "టీమ్ సభ్యుడిని ఎంచుకోండి",
+            msgSent: "సందేశం పంపబడింది",
+            noTeamMessages: "ఇంకా టీమ్ సందేశాలు లేవు",
+            teamMsgHistory: "టీమ్ సందేశాల చరిత్ర",
+            addTeamMember: "టీమ్ సభ్యుడిని జోడించు",
+            allMembers: "అందరికీ పంపు"
+        };
+
+        var EN = {
+            headerSub: "Corporator Election Campaign",
+            call: "Call",
+            wa: "WhatsApp",
+            vol: "Join Volunteer",
+            issue: "Report Issue",
+            promises: "🎯 Key Promises",
+            promisesList: ["✅ 24x7 Clean Water Supply", "✅ Pothole-free Roads", "✅ Door-to-door Garbage Collection",
+                "✅ Women Safety - CCTV Cameras"
+            ],
+            total: "Total Houses",
+            covered: "Covered",
+            follow: "Follow-up",
+            issuesLabel: "Issues",
+            d2d: "🏠 House Visit Entry",
+            save: "Save Visit",
+            export: "Export CSV",
+            housePlace: "House Number / Name",
+            familyPlace: "Family Name",
+            mobilePlace: "Mobile Number",
+            volPlace: "Select Volunteer",
+            issueForm: "⚠️ Public Issue Registration",
+            submit: "Submit Issue",
+            namePlace: "Your Name",
+            mobilePlace2: "Mobile Number",
+            areaPlace: "Colony / Ward",
+            descPlace: "Issue Description",
+            volReg: "🤝 Volunteer Registration",
+            join: "Join as Volunteer",
+            fullNamePlace: "Full Name",
+            volMobilePlace: "Mobile Number",
+            volAreaPlace: "Area / Booth",
+            daily: "📋 Daily Activity Report",
+            report: "Submit Report",
+            dailyNamePlace: "Select Your Name",
+            housesPlace: "How many houses visited today?",
+            notesPlace: "Special notes / issues collected",
+            navHome: "Home",
+            navD2D: "Door to Door",
+            navIssues: "Issues",
+            navVol: "Volunteers",
+            navGallery: "Gallery",
+            coverage: "Campaign Progress",
+            status: "Status",
+            volunteer: "Volunteer",
+            noVisits: "No visits yet",
+            noIssues: "No issues reported",
+            noVols: "No volunteers",
+            noReports: "No reports yet",
+            housesVisited: "houses visited",
+            housesUnit: "houses",
+            savedMsg: "Saved",
+            submittedMsg: "Submitted",
+            pending: "Pending",
+            approved: "Approved",
+            approve: "Approve",
+            noPending: "No pending volunteers",
+            events: "Events",
+            gallery: "Gallery",
+            noEvents: "No events",
+            noGallery: "Gallery empty",
+            admin: "Admin",
+            public: "Public",
+            login: "Login",
+            logout: "Logout",
+            noIssuesReported: "No issues reported yet",
+            fullReport: "Full Report",
+            totalVisits: "Total Visits",
+            totalReports: "Total Reports",
+            delete: "Delete",
+            confirmDelete: "Are you sure you want to delete?",
+            noVisitsYet: "No visits recorded yet",
+            noReportsYet: "No reports submitted yet",
+            approvedVols: "Approved Volunteers",
+            noApprovedVols: "No approved volunteers",
+            allVols: "All Volunteers",
+            reportBy: "Report by",
+            sendMsg: "Send WhatsApp Message",
+            selectMember: "Select Team Member",
+            msgSent: "Message sent successfully!",
+            noTeamMessages: "No team messages sent yet",
+            teamMsgHistory: "Team Message History",
+            addTeamMember: "Add Team Member",
+            allMembers: "Send to ALL Members"
+        };
+
+        // ============================================================
+        // LANGUAGE
+        // ============================================================
+        function setLanguage(lang) {
+            currentLang = lang;
+            currentText = lang === "te" ? TE : EN;
+
+            var elements = {
+                headerSub: document.getElementById("headerSub"),
+                callText: document.getElementById("callText"),
+                waText: document.getElementById("waText"),
+                volBtnText: document.getElementById("volBtnText"),
+                issueBtnText: document.getElementById("issueBtnText"),
+                promisesTitle: document.getElementById("promisesTitle"),
+                adminTotalLabel: document.getElementById("adminTotalLabel"),
+                adminCoveredLabel: document.getElementById("adminCoveredLabel"),
+                adminFollowLabel: document.getElementById("adminFollowLabel"),
+                adminIssuesLabel: document.getElementById("adminIssuesLabel"),
+                d2dTitle: document.getElementById("d2dTitle"),
+                saveText: document.getElementById("saveText"),
+                exportText: document.getElementById("exportText"),
+                houseNo: document.getElementById("houseNo"),
+                familyName: document.getElementById("familyName"),
+                mobileD2D: document.getElementById("mobileD2D"),
+                volunteerNameD2D: document.getElementById("volunteerNameD2D"),
+                issueFormTitle: document.getElementById("issueFormTitle"),
+                submitIssueText: document.getElementById("submitIssueText"),
+                issuePersonName: document.getElementById("issuePersonName"),
+                issuePersonMobile: document.getElementById("issuePersonMobile"),
+                issueArea: document.getElementById("issueArea"),
+                issueDesc: document.getElementById("issueDesc"),
+                volRegTitle: document.getElementById("volRegTitle"),
+                joinVolText: document.getElementById("joinVolText"),
+                volNameReg: document.getElementById("volNameReg"),
+                volMobileReg: document.getElementById("volMobileReg"),
+                volAreaReg: document.getElementById("volAreaReg"),
+                dailyReportTitle: document.getElementById("dailyReportTitle"),
+                submitReportText: document.getElementById("submitReportText"),
+                dailyVolName: document.getElementById("dailyVolName"),
+                housesVisitedDaily: document.getElementById("housesVisitedDaily"),
+                dailyNotes: document.getElementById("dailyNotes"),
+                navHome: document.getElementById("navHome"),
+                navD2D: document.getElementById("navD2D"),
+                navIssues: document.getElementById("navIssues"),
+                navVol: document.getElementById("navVol"),
+                navGallery: document.getElementById("navGallery"),
+                adminAddVolText: document.getElementById("adminAddVolText"),
+                adminSendMsgText: document.getElementById("adminSendMsgText"),
+                candidateName: document.getElementById("candidateName"),
+                slogan: document.getElementById("slogan")
+            };
+
+            if (elements.headerSub) elements.headerSub.innerText = currentText.headerSub;
+            if (elements.callText) elements.callText.innerText = currentText.call;
+            if (elements.waText) elements.waText.innerText = currentText.wa;
+            if (elements.volBtnText) elements.volBtnText.innerText = currentText.vol;
+            if (elements.issueBtnText) elements.issueBtnText.innerText = currentText.issue;
+            if (elements.promisesTitle) elements.promisesTitle.innerHTML = currentText.promises;
+            if (elements.adminTotalLabel) elements.adminTotalLabel.innerText = currentText.total;
+            if (elements.adminCoveredLabel) elements.adminCoveredLabel.innerText = currentText.covered;
+            if (elements.adminFollowLabel) elements.adminFollowLabel.innerText = currentText.follow;
+            if (elements.adminIssuesLabel) elements.adminIssuesLabel.innerText = currentText.issuesLabel;
+            if (elements.d2dTitle) elements.d2dTitle.innerHTML = currentText.d2d;
+            if (elements.saveText) elements.saveText.innerText = currentText.save;
+            if (elements.exportText) elements.exportText.innerText = currentText.export;
+            if (elements.houseNo) elements.houseNo.placeholder = currentText.housePlace;
+            if (elements.familyName) elements.familyName.placeholder = currentText.familyPlace;
+            if (elements.mobileD2D) elements.mobileD2D.placeholder = currentText.mobilePlace;
+            if (elements.volunteerNameD2D) elements.volunteerNameD2D.placeholder = currentText.volPlace;
+            if (elements.issueFormTitle) elements.issueFormTitle.innerHTML = currentText.issueForm;
+            if (elements.submitIssueText) elements.submitIssueText.innerText = currentText.submit;
+            if (elements.issuePersonName) elements.issuePersonName.placeholder = currentText.namePlace;
+            if (elements.issuePersonMobile) elements.issuePersonMobile.placeholder = currentText.mobilePlace2;
+            if (elements.issueArea) elements.issueArea.placeholder = currentText.areaPlace;
+            if (elements.issueDesc) elements.issueDesc.placeholder = currentText.descPlace;
+            if (elements.volRegTitle) elements.volRegTitle.innerHTML = currentText.volReg;
+            if (elements.joinVolText) elements.joinVolText.innerText = currentText.join;
+            if (elements.volNameReg) elements.volNameReg.placeholder = currentText.fullNamePlace;
+            if (elements.volMobileReg) elements.volMobileReg.placeholder = currentText.volMobilePlace;
+            if (elements.volAreaReg) elements.volAreaReg.placeholder = currentText.volAreaPlace;
+            if (elements.dailyReportTitle) elements.dailyReportTitle.innerHTML = currentText.daily;
+            if (elements.submitReportText) elements.submitReportText.innerText = currentText.report;
+            if (elements.dailyVolName) elements.dailyVolName.placeholder = currentText.dailyNamePlace;
+            if (elements.housesVisitedDaily) elements.housesVisitedDaily.placeholder = currentText.housesPlace;
+            if (elements.dailyNotes) elements.dailyNotes.placeholder = currentText.notesPlace;
+            if (elements.navHome) elements.navHome.innerText = currentText.navHome;
+            if (elements.navD2D) elements.navD2D.innerText = currentText.navD2D;
+            if (elements.navIssues) elements.navIssues.innerText = currentText.navIssues;
+            if (elements.navVol) elements.navVol.innerText = currentText.navVol;
+            if (elements.navGallery) elements.navGallery.innerText = currentText.navGallery;
+            if (elements.adminAddVolText) elements.adminAddVolText.innerText = currentText.addTeamMember;
+            if (elements.adminSendMsgText) elements.adminSendMsgText.innerText = currentText.sendMsg;
+
+            var promisesUl = document.getElementById("promisesList");
+            if (promisesUl) {
+                promisesUl.innerHTML = currentText.promisesList.map(function(p) {
+                    return '<li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">' + p + '</li>';
+                }).join("");
+            }
+
+            if (lang === "te") {
+                if (elements.candidateName) elements.candidateName.innerText = appData.config.candidateNameTe;
+                if (elements.slogan) elements.slogan.innerText = appData.config.sloganTe;
+            } else {
+                if (elements.candidateName) elements.candidateName.innerText = appData.config.candidateNameEn;
+                if (elements.slogan) elements.slogan.innerText = appData.config.sloganEn;
+            }
+
+            var btns = document.querySelectorAll(".lang-btn");
+            for (var i = 0; i < btns.length; i++) btns[i].classList.remove("active");
+            var activeBtn = document.querySelector('.lang-btn[data-lang="' + lang + '"]');
+            if (activeBtn) activeBtn.classList.add("active");
+
+            renderAll();
+            updateAdminUI();
+            populateFilters();
+            populateAdminTeamDropdown();
+        }
+
+        // ============================================================
+        // FIREBASE AUTH - ADMIN LOGIN
+        // ============================================================
+        function loginAdmin() {
+            var email = document.getElementById("adminEmail").value.trim();
+            var pass = document.getElementById("adminPass").value.trim();
+            var errorEl = document.getElementById("authError");
+
+            if (!email || !pass) {
+                if (errorEl) { errorEl.textContent = "Please enter email and password.";
+                    errorEl.style.display = 'block'; }
+                return;
+            }
+
+            if (!useFirebase || !auth) {
+                // Fallback: local admin check
+                if (email === "admin@example.com" && pass === "admin123") {
+                    isAdmin = true;
+                    currentUser = { email: email };
+                    onAdminLoginSuccess();
+                    return;
+                } else {
+                    if (errorEl) { errorEl.textContent = "Invalid credentials (Firebase not configured).";
+                        errorEl.style.display = 'block'; }
+                    return;
+                }
+            }
+
+            if (errorEl) errorEl.style.display = 'none';
+
+            auth.signInWithEmailAndPassword(email, pass)
+                .then(function(userCredential) {
+                    currentUser = userCredential.user;
+                    isAdmin = true;
+                    onAdminLoginSuccess();
+                })
+                .catch(function(error) {
+                    console.warn('Auth error:', error.message);
+                    if (errorEl) {
+                        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                            errorEl.textContent = "Invalid email or password. Please try again.";
+                        } else if (error.code === 'auth/too-many-requests') {
+                            errorEl.textContent = "Too many failed attempts. Please try again later.";
+                        } else {
+                            errorEl.textContent = error.message;
+                        }
+                        errorEl.style.display = 'block';
+                    }
+                });
+        }
+
+        function logoutAdmin() {
+            if (useFirebase && auth) {
+                auth.signOut().catch(function(e) { console.warn('Sign out error:', e); });
+            }
+            currentUser = null;
+            isAdmin = false;
+            onAdminLogout();
+        }
+
+        function onAdminLoginSuccess() {
+            var overlay = document.getElementById("loginOverlay");
+            if (overlay) overlay.classList.remove("active");
+
+            var adminStatus = document.getElementById("adminStatus");
+            if (adminStatus) adminStatus.innerText = "🔑 " + currentText.admin + " (" + (currentUser ? currentUser.email : 'admin') +
+                ")";
+
+            var toggleBtn = document.getElementById("adminToggleBtn");
+            if (toggleBtn) toggleBtn.classList.add("hidden");
+
+            var logoutBtn = document.getElementById("adminLogoutBtn");
+            if (logoutBtn) logoutBtn.classList.remove("hidden");
+
+            var adminPages = document.querySelectorAll(".admin-only");
+            for (var i = 0; i < adminPages.length; i++) adminPages[i].classList.add("active");
+
+            var bottomNav = document.getElementById("bottomNav");
+            if (bottomNav) bottomNav.classList.add("admin-mode");
+
+            var allPages = document.querySelectorAll(".page:not(.admin-only)");
+            for (var j = 0; j < allPages.length; j++) allPages[j].classList.remove("active");
+
+            var adminPage = document.getElementById("page-admin");
+            if (adminPage) adminPage.classList.add("active");
+
+            syncText.textContent = 'Admin Online';
+            syncStatus.className = 'sync-status firebase-connected';
+
+            renderAll();
+            updateAdminUI();
+            populateFilters();
+            populateVolunteerDropdowns();
+            populateAdminTeamDropdown();
+
+            // Load data from Firestore if available
+            if (useFirebase && db) {
+                loadAllFromFirestore();
+            }
+        }
+
+        function onAdminLogout() {
+            var adminStatus = document.getElementById("adminStatus");
+            if (adminStatus) adminStatus.innerText = "👤 " + currentText.public;
+
+            var toggleBtn = document.getElementById("adminToggleBtn");
+            if (toggleBtn) toggleBtn.classList.remove("hidden");
+
+            var logoutBtn = document.getElementById("adminLogoutBtn");
+            if (logoutBtn) logoutBtn.classList.add("hidden");
+
+            var adminPages = document.querySelectorAll(".admin-only");
+            for (var i = 0; i < adminPages.length; i++) adminPages[i].classList.remove("active");
+
+            var bottomNav = document.getElementById("bottomNav");
+            if (bottomNav) bottomNav.classList.remove("admin-mode");
+
+            var allPages = document.querySelectorAll(".page");
+            for (var j = 0; j < allPages.length; j++) allPages[j].classList.remove("active");
+
+            var homePage = document.getElementById("page-home");
+            if (homePage) homePage.classList.add("active");
+
+            var navs = document.querySelectorAll(".nav-item");
+            for (var k = 0; k < navs.length; k++) navs[k].classList.remove("active");
+            var homeNav = document.querySelector('.nav-item[data-page="page-home"]');
+            if (homeNav) homeNav.classList.add("active");
+
+            syncText.textContent = 'Public Mode';
+            syncStatus.className = 'sync-status';
+
+            renderAll();
+            populateFilters();
+            populateVolunteerDropdowns();
+        }
+
+        function toggleAdminLogin() {
+            if (isAdmin) {
+                logoutAdmin();
+            } else {
+                var overlay = document.getElementById("loginOverlay");
+                if (overlay) overlay.classList.add("active");
+                var errorEl = document.getElementById("authError");
+                if (errorEl) errorEl.style.display = 'none';
+            }
+        }
+
+        // ============================================================
+        // FIRESTORE - DATA SYNC
+        // ============================================================
+        function startFirestoreListeners() {
+    if (!useFirebase || !db) return;
+
+    // Remove old listeners before creating new ones
+    for (var i = 0; i < firestoreListeners.length; i++) {
+        try {
+            firestoreListeners[i]();
+        } catch (e) {}
+    }
+    firestoreListeners = [];
+
+    // Visits
+    var unsubVisits = db.collection('visits')
+        .orderBy('timestamp', 'desc')
+        .onSnapshot(function(snapshot) {
+            var data = [];
+
+            snapshot.forEach(function(doc) {
+                var d = doc.data();
+                d.id = doc.id;
+                data.push(d);
+            });
+
+            appData.visits = data;
+            renderAll();
+            updateAdminUI();
+        }, function(err) {
+            console.warn('Visits listener error:', err);
+        });
+
+    firestoreListeners.push(unsubVisits);
+
+    // Issues
+    var unsubIssues = db.collection('issues')
+        .orderBy('timestamp', 'desc')
+        .onSnapshot(function(snapshot) {
+            var data = [];
+
+            snapshot.forEach(function(doc) {
+                var d = doc.data();
+                d.id = doc.id;
+                data.push(d);
+            });
+
+            appData.issues = data;
+            renderAll();
+            updateAdminUI();
+        }, function(err) {
+            console.warn('Issues listener error:', err);
+        });
+
+    firestoreListeners.push(unsubIssues);
+
+    // Volunteers
+    var unsubVols = db.collection('volunteers')
+        .onSnapshot(function(snapshot) {
+            var data = [];
+
+            snapshot.forEach(function(doc) {
+                var d = doc.data();
+                d.id = doc.id;
+                data.push(d);
+            });
+
+            appData.volunteers = data;
+            renderAll();
+            populateFilters();
+            populateVolunteerDropdowns();
+            populateAdminTeamDropdown();
+        }, function(err) {
+            console.warn('Volunteers listener error:', err);
+        });
+
+    firestoreListeners.push(unsubVols);
+
+    // Daily reports
+    var unsubReports = db.collection('dailyReports')
+        .orderBy('timestamp', 'desc')
+        .onSnapshot(function(snapshot) {
+            var data = [];
+
+            snapshot.forEach(function(doc) {
+                var d = doc.data();
+                d.id = doc.id;
+                data.push(d);
+            });
+
+            appData.dailyReports = data;
+            renderAll();
+        }, function(err) {
+            console.warn('Daily reports listener error:', err);
+        });
+
+    firestoreListeners.push(unsubReports);
+
+    // Events
+    var unsubEvents = db.collection('events')
+        .orderBy('date', 'desc')
+        .onSnapshot(function(snapshot) {
+            var data = [];
+
+            snapshot.forEach(function(doc) {
+                var d = doc.data();
+                d.id = doc.id;
+                data.push(d);
+            });
+
+            appData.events = data;
+            renderAll();
+        }, function(err) {
+            console.warn('Events listener error:', err);
+        });
+
+    firestoreListeners.push(unsubEvents);
+
+    // Team messages
+    var unsubMsgs = db.collection('teamMessages')
+        .orderBy('timestamp', 'desc')
+        .onSnapshot(function(snapshot) {
+            var data = [];
+
+            snapshot.forEach(function(doc) {
+                var d = doc.data();
+                d.id = doc.id;
+                data.push(d);
+            });
+
+            appData.teamMessages = data;
+            renderAll();
+        }, function(err) {
+            console.warn('Team messages listener error:', err);
+        });
+
+    firestoreListeners.push(unsubMsgs);
+
+    // Gallery
+    var unsubGallery = db.collection('gallery')
+        .orderBy('timestamp', 'desc')
+        .onSnapshot(function(snapshot) {
+            var data = [];
+
+            snapshot.forEach(function(doc) {
+                var d = doc.data();
+                d.id = doc.id;
+                data.push(d);
+            });
+
+            appData.gallery = data;
+            renderAll();
+        }, function(err) {
+            console.warn('Gallery listener error:', err);
+        });
+
+    firestoreListeners.push(unsubGallery);
+
+    console.log('Firestore listeners started');
+    syncText.textContent = 'Live Sync';
+    syncStatus.className = 'sync-status firebase-connected';
+}
+        function loadAllFromFirestore() {
+            if (!useFirebase || !db) return;
+
+            // Load all data once (fallback for when listeners don't fire)
+            Promise.all([
+                db.collection('visits').orderBy('timestamp', 'desc').get(),
+                db.collection('issues').orderBy('timestamp', 'desc').get(),
+                db.collection('volunteers').get(),
+                db.collection('dailyReports').orderBy('timestamp', 'desc').get(),
+                db.collection('events').orderBy('date', 'desc').get(),
+                db.collection('teamMessages').orderBy('timestamp', 'desc').get(),
+                db.collection('gallery').get()
+            ]).then(function(results) {
+                if (results[0]) {
+                    var data = [];
+                    results[0].forEach(function(doc) { var d = doc.data();
+                        d.id = doc.id;
+                        data.push(d); });
+                    appData.visits = data;
+                }
+                if (results[1]) {
+                    var data = [];
+                    results[1].forEach(function(doc) { var d = doc.data();
+                        d.id = doc.id;
+                        data.push(d); });
+                    appData.issues = data;
+                }
+                if (results[2]) {
+                    var data = [];
+                    results[2].forEach(function(doc) { var d = doc.data();
+                        d.id = doc.id;
+                        data.push(d); });
+                    appData.volunteers = data;
+                }
+                if (results[3]) {
+                    var data = [];
+                    results[3].forEach(function(doc) { var d = doc.data();
+                        d.id = doc.id;
+                        data.push(d); });
+                    appData.dailyReports = data;
+                }
+                if (results[4]) {
+                    var data = [];
+                    results[4].forEach(function(doc) { var d = doc.data();
+                        d.id = doc.id;
+                        data.push(d); });
+                    appData.events = data;
+                }
+                if (results[5]) {
+                    var data = [];
+                    results[5].forEach(function(doc) { var d = doc.data();
+                        d.id = doc.id;
+                        data.push(d); });
+                    appData.teamMessages = data;
+                }
+                if (results[6]) {
+                    var data = [];
+                    results[6].forEach(function(doc) { var d = doc.data();
+                        d.id = doc.id;
+                        data.push(d); });
+                    appData.gallery = data;
+                }
+                renderAll();
+                populateFilters();
+                populateVolunteerDropdowns();
+                populateAdminTeamDropdown();
+                syncText.textContent = 'Loaded from Firebase';
+                syncStatus.className = 'sync-status firebase-connected';
+            }).catch(function(err) {
+                console.warn('Load from Firestore error:', err);
+            });
+        }
+
+        // ============================================================
+        // FIRESTORE - SAVE FUNCTIONS
+        // ============================================================
+        function saveToFirestore(collection, data) {
+            if (!useFirebase || !db) return Promise.resolve();
+
+            var docId = data.id || db.collection(collection).doc().id;
+            data.id = docId;
+            data.updatedAt = new Date().toISOString();
+
+            return db.collection(collection).doc(docId).set(data, { merge: true })
+                .catch(function(err) {
+                    console.warn('Firestore save error:', err);
+                });
+        }
+
+        // ============================================================
+// CLOUDINARY - GALLERY UPLOAD
+// ============================================================
+const CLOUDINARY_CLOUD_NAME = "dlnbnzzbf";
+const CLOUDINARY_UPLOAD_PRESET = "Campaign_Gallery";
+
+async function uploadGalleryMediaFirebase(file, caption) {
+    var resourceType = file.type && file.type.startsWith("video/") ? "video" : "image";
+
+    var formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+    formData.append("folder", "campaign_gallery");
+
+    var response = await fetch(
+        "https://api.cloudinary.com/v1_1/" + CLOUDINARY_CLOUD_NAME + "/" + resourceType + "/upload",
+        {
+            method: "POST",
+            body: formData
+        }
+    );
+
+    var result = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            result.error && result.error.message
+                ? result.error.message
+                : "Cloudinary upload failed."
+        );
+    }
+
+    return result.secure_url;
+}        // ============================================================
+        // UI HELPERS
+        // ============================================================
+        function updateAdminUI() {
+    updateAdminStats();
+}
+
+        function populateFilters() {
+            var approved = appData.volunteers.filter(function(v) { return v.status === "approved"; });
+            var filterEl = document.getElementById("adminReportFilter");
+            if (filterEl) {
+                var currentVal = filterEl.value;
+                filterEl.innerHTML = '<option value="all">' + currentText.allVols + '</option>';
+                for (var i = 0; i < approved.length; i++) {
+                    filterEl.innerHTML += '<option value="' + approved[i].name + '">' + approved[i].name + '</option>';
+                }
+                if (currentVal && approved.some(function(v) { return v.name === currentVal; })) {
+                    filterEl.value = currentVal;
+                }
+            }
+        }
+
+        function populateAdminTeamDropdown() {
+            var sel = document.getElementById("adminTeamMemberSelect");
+            if (!sel) return;
+            var currentVal = sel.value;
+            var approved = appData.volunteers.filter(function(v) { return v.status === "approved"; });
+            sel.innerHTML = '<option value="all">📢 ' + currentText.allMembers + ' (' + approved.length + ')</option>';
+            for (var i = 0; i < approved.length; i++) {
+                var v = approved[i];
+                var label = v.name + ' (📱' + v.mobile + ')' + (v.area ? ' - ' + v.area : '');
+                sel.innerHTML += '<option value="' + v.id + '">' + label + '</option>';
+            }
+            if (currentVal && approved.some(function(v) { return v.id === currentVal; })) {
+                sel.value = currentVal;
+            }
+        }
+
+        function populateVolunteerDropdowns() {
+            var approved = appData.volunteers.filter(function(v) { return v.status === "approved"; });
+            var selects = ["volunteerNameD2D", "dailyVolName"];
+            for (var s = 0; s < selects.length; s++) {
+                var sel = document.getElementById(selects[s]);
+                if (!sel) continue;
+                var currentVal = sel.value;
+                var placeholder = selects[s] === "volunteerNameD2D" ? currentText.volPlace : currentText.dailyNamePlace;
+                sel.innerHTML = '<option value="">' + placeholder + '</option>';
+                for (var i = 0; i < approved.length; i++) {
+                    sel.innerHTML += '<option value="' + approved[i].name + '">' + approved[i].name + '</option>';
+                }
+                if (currentVal && approved.some(function(v) { return v.name === currentVal; })) {
+                    sel.value = currentVal;
+                }
+            }
+        }
+
+        function getAdminMessageTemplate(type) {
+            var templates = {
+                'default': '🙏 Hello Team! Great work on the campaign. Let\'s continue our door-to-door efforts. We are achieving our targets. Keep up the spirit! Jai Hind! 🇮🇳',
+                'meeting': '📅 Dear Team Member, We have an important team meeting tomorrow at 10 AM. Please attend. We will discuss campaign strategy and progress. Jai Hind! 🇮🇳',
+                'task': '📋 Task Assignment: Please complete door-to-door survey in your assigned area today. Collect feedback from 50 houses. Report back by evening. Thank you! 🙏',
+                'update': '🔄 Campaign Update: We have covered 60% of our target. Keep pushing! Remember our promise of development, clean water, and good roads. Vijay Anna is counting on us! 🇮🇳',
+                'custom': ''
+            };
+            return templates[type] || templates['default'];
+        }
+
+        // ============================================================
+        // CRUD OPERATIONS (with Firebase sync)
+        // ============================================================
+        function addVisit(data) {
+    data.timestamp = Date.now();
+
+    if (useFirebase && db) {
+        data.id = db.collection('visits').doc().id;
+
+        db.collection('visits').doc(data.id).set(data)
+            .then(function() {
+                appData.visits.push(data);
+                renderAll();
+                updateAdminStats();
+                console.log("Visit saved to Firebase");
+            })
+            .catch(function(error) {
+                console.error("Visit save error:", error);
+                alert("Visit could not be saved. Please try again.");
+            });
+    } else {
+        data.id = Date.now().toString();
+        appData.visits.push(data);
+        saveData();
+    }
+}       function addIssue(data) {
+    data.timestamp = Date.now();
+
+    if (useFirebase && db) {
+        data.id = db.collection('issues').doc().id;
+
+        db.collection('issues').doc(data.id).set(data)
+            .then(function() {
+                appData.issues.push(data);
+                renderAll();
+                updateAdminStats();
+                console.log("Issue saved to Firebase");
+            })
+            .catch(function(error) {
+                console.error("Issue save error:", error);
+                alert("Issue could not be saved: " + error.message);
+            });
+
+        return;
+    }
+
+    data.id = Date.now().toString();
+    appData.issues.push(data);
+    saveData();
+}
+
+        function addVolunteer(data) {
+    data.timestamp = Date.now();
+
+    if (useFirebase && db) {
+        data.id = db.collection('volunteers').doc().id;
+
+        db.collection('volunteers').doc(data.id).set(data)
+            .then(function() {
+                console.log("Volunteer registration saved to Firebase");
+            })
+            .catch(function(error) {
+                console.error("Volunteer registration error:", error);
+                alert("Registration could not be saved. Please try again.");
+            });
+    } else {
+        data.id = Date.now().toString();
+        appData.volunteers.push(data);
+        saveData();
+    }
+}
+
+        function addDailyReport(data) {
+    data.timestamp = Date.now();
+
+    if (useFirebase && db) {
+        data.id = db.collection('dailyReports').doc().id;
+
+        db.collection('dailyReports').doc(data.id).set(data)
+            .then(function() {
+                console.log("Daily report saved to Firebase");
+            })
+            .catch(function(error) {
+                console.error("Daily report save error:", error);
+                alert("Daily report could not be saved. Please try again.");
+            });
+    } else {
+        data.id = Date.now().toString();
+        appData.dailyReports.push(data);
+        saveData();
+    }
+}
+
+        function addEvent(data) {
+            if (useFirebase && db && isAdmin) {
+                data.id = db.collection('events').doc().id;
+                data.timestamp = Date.now();
+                saveToFirestore('events', data);
+            } else {
+                data.id = Date.now().toString();
+                data.timestamp = Date.now();
+                appData.events.push(data);
+            }
+            saveData();
+        }
+
+        function addTeamMessage(data) {
+            if (useFirebase && db && isAdmin) {
+                data.id = db.collection('teamMessages').doc().id;
+                data.timestamp = Date.now();
+                saveToFirestore('teamMessages', data);
+            } else {
+                data.id = Date.now().toString();
+                data.timestamp = Date.now();
+                appData.teamMessages.push(data);
+            }
+            saveData();
+        }
+                function addGalleryItem(data) {
+    if (useFirebase && db) {
+        data.id = db.collection('gallery').doc().id;
+        data.timestamp = Date.now();
+
+        saveToFirestore('gallery', data)
+            .then(function() {
+                console.log("Gallery item saved to Firebase");
+            })
+            .catch(function(error) {
+                console.error("Gallery save error:", error);
+                alert("Gallery item could not be saved: " + error.message);
+            });
+    } else {
+        data.id = Date.now().toString();
+        data.timestamp = Date.now();
+        appData.gallery.push(data);
+        saveData();
+    }
+}
+        function deleteFromFirestore(collection, id) {
+    if (!useFirebase || !db || !isAdmin) {
+        alert("Admin login is required to delete data.");
+        return;
+    }
+
+    db.collection(collection).doc(id).delete()
+        .then(function() {
+            console.log("Deleted successfully:", collection, id);
+        })
+        .catch(function(error) {
+            console.error("Delete failed:", error);
+            alert("Delete failed: " + error.message);
+        });
+}
+
+function deleteItem(collection, id) {
+    if (useFirebase && db && isAdmin) {
+        deleteFromFirestore(collection, id);
+        return;
+    }
+
+    if (collection === 'visits') {
+        appData.visits = appData.visits.filter(function(v) {
+            return v.id !== id;
+        });
+    } else if (collection === 'issues') {
+        appData.issues = appData.issues.filter(function(v) {
+            return v.id !== id;
+        });
+    } else if (collection === 'volunteers') {
+        appData.volunteers = appData.volunteers.filter(function(v) {
+            return v.id !== id;
+        });
+    } else if (collection === 'dailyReports') {
+        appData.dailyReports = appData.dailyReports.filter(function(v) {
+            return v.id !== id;
+        });
+    } else if (collection === 'events') {
+        appData.events = appData.events.filter(function(v) {
+            return v.id !== id;
+        });
+    } else if (collection === 'teamMessages') {
+        appData.teamMessages = appData.teamMessages.filter(function(v) {
+            return v.id !== id;
+        });
+    } else if (collection === 'gallery') {
+        appData.gallery = appData.gallery.filter(function(v) {
+            return v.id !== id;
+        });
+    }
+
+    saveData();
+}
+        // ============================================================
+        // SAVE / LOAD LOCAL
+        // ============================================================
+        function saveData() {
+            localStorage.setItem("electionAppV4", JSON.stringify(appData));
+            renderAll();
+            updateAdminUI();
+            populateFilters();
+            populateVolunteerDropdowns();
+        }
+
+        function loadData() {
+            try {
+                var saved = useFirebase ? null : localStorage.getItem("electionAppV4"); 
+                if (saved) {
+                    var savedData = JSON.parse(saved);
+                    savedData.config = appData.config;
+                    if (!savedData.teamMessages) savedData.teamMessages = [];
+                    if (!savedData.gallery) savedData.gallery = [];
+                    for (var i = 0; i < savedData.volunteers.length; i++) {
+                        if (!savedData.volunteers[i].status) savedData.volunteers[i].status = "pending";
+                    }
+                    appData = savedData;
+                }
+            } catch (error) {
+                console.log(error);
+                localStorage.removeItem("electionAppV4");
+            }
+            applyConfig();
+            renderAll();
+            populateFilters();
+            populateVolunteerDropdowns();
+        }
+
+        function applyConfig() {
+            var photo = document.getElementById("candidatePhoto");
+            var waLink = document.getElementById("waLink");
+            var floatBtn = document.getElementById("whatsappFloatBtn");
+            if (photo) photo.src = appData.config.photo;
+            if (waLink) waLink.href = "https://wa.me/" + appData.config.whatsapp.replace("+", "");
+            if (floatBtn) floatBtn.href = "https://wa.me/" + appData.config.whatsapp.replace("+", "");
+        }
+
+        // ============================================================
+        // RENDER FUNCTIONS
+        // ============================================================
+        function renderAll() {
+            renderVisits();
+            renderAdminAllVisits();
+            renderAdminAllReports();
+            renderAdminIssues();
+            renderVolunteers();
+            renderPendingVolunteers();
+            renderApprovedVolunteers();
+            renderDailyReports();
+            renderAdminFilteredReports();
+            renderAdminFullReport();
+            renderEvents();
+            renderGallery();
+            renderAdminTeamMessageHistory();
+            updateAdminStats();
+            updateAdminUI();
+            populateAdminTeamDropdown();
+        }
+
+        function renderVisits() {
+            var cont = document.getElementById("visitsList");
+            if (!cont) return;
+            if (appData.visits.length === 0) { cont.innerHTML = '<div class="card">' + currentText.noVisits + '</div>'; return; }
+            var html = '<h3>📋 Visit History</h3>';
+            for (var i = appData.visits.length - 1; i >= 0; i--) {
+                var v = appData.visits[i];
+                html += '<div class="card"><b>' + v.houseNo + '</b> - ' + v.familyName + '<br>' + currentText.status + ': ' + (v
+                    .status === 'Visited' ? '✅ Visited' : v.status === 'Follow-up' ? '🔄 Follow-up' : '⏳ Pending') +
+                    '<br>' + currentText.volunteer + ': ' + v.volunteer + '</div>';
+            }
+            cont.innerHTML = html;
+        }
+
+        function renderAdminAllVisits() {
+            var cont = document.getElementById("adminAllVisits");
+            if (!cont) return;
+            if (appData.visits.length === 0) {
+                cont.innerHTML = '<div class="empty-state"><i class="fas fa-door-open"></i>' + currentText.noVisitsYet +
+                    '</div>';
+                return;
+            }
+            var html = '';
+            for (var i = appData.visits.length - 1; i >= 0; i--) {
+                var v = appData.visits[i];
+                html += '<div class="card" style="padding:12px;margin-bottom:6px;"><div style="display:flex;justify-content:space-between;align-items:center;"><div><strong>' +
+                    v.houseNo + '</strong> - ' + v.familyName + '<br><span style="font-size:12px;color:#64748b;">' +
+                    currentText.status + ': ' + (v.status === 'Visited' ? '✅ Visited' : v.status === 'Follow-up' ?
+                        '🔄 Follow-up' : '⏳ Pending') + '</span><br><span style="font-size:12px;color:#64748b;">' +
+                    currentText.volunteer + ': ' + v.volunteer + '</span></div><button class="btn btn-danger btn-sm" onclick="deleteVisit(\'' +
+                    v.id + '\')">🗑️</button></div></div>';
+            }
+            cont.innerHTML = html;
+        }
+
+        function deleteVisit(id) {
+            if (confirm(currentText.confirmDelete)) {
+                deleteItem('visits', id);
+            }
+        }
+
+        function renderAdminAllReports() {
+            var cont = document.getElementById("adminAllReports");
+            if (!cont) return;
+            if (appData.dailyReports.length === 0) {
+                cont.innerHTML = '<div class="empty-state"><i class="fas fa-file-alt"></i>' + currentText.noReportsYet +
+                    '</div>';
+                return;
+            }
+            var html = '';
+            for (var i = appData.dailyReports.length - 1; i >= 0; i--) {
+                var r = appData.dailyReports[i];
+                html += '<div class="card" style="padding:12px;margin-bottom:6px;"><div style="display:flex;justify-content:space-between;align-items:center;"><div><strong>' +
+                    r.volunteer + '</strong><span style="margin-left:8px;font-size:12px;color:#64748b;">🏠 ' + r
+                    .housesVisited + ' ' + currentText.housesVisited + '</span><div style="font-size:12px;color:#475569;margin-top:2px;">' +
+                    (r.notes || '') + '</div></div><button class="btn btn-danger btn-sm" onclick="deleteAdminReport(\'' + r
+                    .id + '\')">🗑️</button></div></div>';
+            }
+            cont.innerHTML = html;
+        }
+
+        function deleteAdminReport(id) {
+            if (confirm(currentText.confirmDelete)) {
+                deleteItem('dailyReports', id);
+            }
+        }
+
+        function renderAdminIssues() {
+            var cont = document.getElementById("adminIssuesList");
+            if (!cont) return;
+            if (appData.issues.length === 0) {
+                cont.innerHTML = '<div class="empty-state"><i class="fas fa-check-circle"></i>' + currentText
+                    .noIssuesReported + '</div>';
+                return;
+            }
+            var html = '';
+            for (var i = appData.issues.length - 1; i >= 0; i--) {
+                var issue = appData.issues[i];
+                html += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:4px solid var(--accent);"><div style="display:flex;justify-content:space-between;align-items:start;"><strong>#' +
+                    (i + 1) + ' - ' + issue.category + '</strong><button class="btn btn-danger btn-sm" onclick="deleteIssue(\'' +
+                    issue.id + '\')">🗑️ ' + currentText.delete + '</button></div><div class="issue-detail"><i class="fas fa-user"></i> <strong>' +
+                    currentText.name + ':</strong> ' + issue.name + '</div><div class="issue-detail"><i class="fas fa-phone"></i> <strong>' +
+                    currentText.mobile + ':</strong> ' + (issue.mobile || 'N/A') +
+                    '</div><div class="issue-detail"><i class="fas fa-map-marker-alt"></i> <strong>' + currentText
+                    .area + ':</strong> ' + (issue.area || 'N/A') +
+                    '</div><div class="issue-detail"><i class="fas fa-tag"></i> <strong>' + currentText.category +
+                    ':</strong> ' + issue.category +
+                    '</div><div class="issue-detail" style="margin-top:6px;padding:8px;background:#f8fafc;border-radius:8px;"><i class="fas fa-file-alt"></i> <strong>' +
+                    currentText.description + ':</strong> ' + issue.desc + '</div></div>';
+            }
+            cont.innerHTML = html;
+        }
+
+        function deleteIssue(id) {
+            if (confirm(currentText.confirmDelete)) {
+                deleteItem('issues', id);
+            }
+        }
+
+        function renderPendingVolunteers() {
+            var cont = document.getElementById("pendingVolunteersList");
+            if (!cont) return;
+            var pending = appData.volunteers.filter(function(v) { return v.status === "pending"; });
+            if (pending.length === 0) {
+                cont.innerHTML = '<div class="empty-state"><i class="fas fa-user-check"></i>' + currentText.noPending +
+                    '</div>';
+                return;
+            }
+            var html = '';
+            for (var i = 0; i < pending.length; i++) {
+                var v = pending[i];
+                html += '<div class="card" style="padding:12px;"><div style="display:flex;justify-content:space-between;align-items:center;"><div><strong>' +
+                    v.name + '</strong><br><span style="font-size:13px;color:#64748b;">📞 ' + v.mobile + ' | 📍 ' + v
+                    .area + '</span></div><span class="pending-badge">' + currentText.pending +
+                    '</span></div><div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-success btn-sm" onclick="approveVolunteer(\'' +
+                    v.id + '\')">✅ ' + currentText.approve +
+                    '</button><button class="btn btn-danger btn-sm" onclick="deleteVolunteer(\'' + v.id +
+                    '\')">🗑️ ' + currentText.delete + '</button></div></div>';
+            }
+            cont.innerHTML = html;
+        }
+
+        function renderApprovedVolunteers() {
+            var cont = document.getElementById("approvedVolunteersList");
+            if (!cont) return;
+            var approved = appData.volunteers.filter(function(v) { return v.status === "approved"; });
+            if (approved.length === 0) {
+                cont.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i>' + currentText.noApprovedVols +
+                    '</div>';
+                return;
+            }
+            var html = '';
+            for (var i = 0; i < approved.length; i++) {
+                var v = approved[i];
+                html += '<div class="card" style="padding:10px;"><div style="display:flex;justify-content:space-between;align-items:center;"><div><strong>' +
+                    v.name + '</strong><br><span style="font-size:13px;color:#64748b;">📞 ' + v.mobile + ' | 📍 ' + v
+                    .area + '</span></div><span class="approved-badge">' + currentText.approved +
+                    '</span></div><div style="margin-top:6px;"><button class="btn btn-danger btn-sm" onclick="deleteApprovedVolunteer(\'' +
+                    v.id + '\')">🗑️ ' + currentText.delete + '</button></div></div>';
+            }
+            cont.innerHTML = html;
+        }
+
+        function approveVolunteer(id) {
+            var vol = appData.volunteers.find(function(v) { return v.id === id; });
+            if (vol) {
+                vol.status = "approved";
+                if (useFirebase && db && isAdmin) {
+                    saveToFirestore('volunteers', vol);
+                }
+                saveData();
+                renderAll();
+                populateFilters();
+                populateVolunteerDropdowns();
+                populateAdminTeamDropdown();
+            }
+        }
+
+        function deleteVolunteer(id) {
+            if (confirm(currentText.confirmDelete)) {
+                deleteItem('volunteers', id);
+                renderAll();
+                populateFilters();
+                populateVolunteerDropdowns();
+                populateAdminTeamDropdown();
+            }
+        }
+
+        function deleteApprovedVolunteer(id) {
+            if (confirm(currentText.confirmDelete)) {
+                deleteItem('volunteers', id);
+                renderAll();
+                populateFilters();
+                populateVolunteerDropdowns();
+                populateAdminTeamDropdown();
+            }
+        }
+
+        function renderVolunteers() {
+            var cont = document.getElementById("volunteersList");
+            if (!cont) return;
+            var approved = appData.volunteers.filter(function(v) { return v.status === "approved"; });
+            if (approved.length === 0) { cont.innerHTML = '<div class="card">' + currentText.noVols + '</div>'; return; }
+            var html = '<h3>🤝 ' + currentText.volReg + '</h3>';
+            for (var i = approved.length - 1; i >= 0; i--) {
+                var v = approved[i];
+                html += '<div class="card"><b>' + v.name + '</b><br>📞 ' + v.mobile + ' | 📍 ' + v.area + '</div>';
+            }
+            cont.innerHTML = html;
+        }
+
+        function renderDailyReports() {
+            var cont = document.getElementById("dailyReportsList");
+            if (!cont) return;
+            if (appData.dailyReports.length === 0) { cont.innerHTML = '<div class="card">' + currentText.noReports +
+                    '</div>'; return; }
+            var html = '<h3>📋 ' + currentText.daily + '</h3>';
+            for (var i = appData.dailyReports.length - 1; i >= 0; i--) {
+                var r = appData.dailyReports[i];
+                html += '<div class="card"><b>' + r.volunteer + '</b> 🏠 ' + r.housesVisited + ' ' + currentText
+                    .housesVisited + '<br>📝 ' + (r.notes || '') + '</div>';
+            }
+            cont.innerHTML = html;
+        }
+
+        function renderAdminFilteredReports() {
+            var cont = document.getElementById("adminFilteredReports");
+            if (!cont) return;
+            var filter = document.getElementById("adminReportFilter");
+            var filterVal = filter ? filter.value : 'all';
+            var reports = appData.dailyReports;
+            if (filterVal !== "all") {
+                reports = reports.filter(function(r) { return r.volunteer === filterVal; });
+            }
+            if (reports.length === 0) {
+                cont.innerHTML = '<div class="card">' + currentText.noReports + '</div>';
+                return;
+            }
+            var totalHouses = 0;
+            for (var i = 0; i < reports.length; i++) totalHouses += parseInt(reports[i].housesVisited) || 0;
+            var html = '<div style="background:#f8fafc;border-radius:12px;padding:10px;margin-bottom:10px;"><strong>' +
+                currentText.totalVisits + ': ' + totalHouses + '</strong> | ' + currentText.totalReports + ': ' + reports
+                .length + '</div>';
+            for (var j = reports.length - 1; j >= 0; j--) {
+                var r = reports[j];
+                html += '<div class="card" style="padding:10px;margin-bottom:6px;"><div style="display:flex;justify-content:space-between;align-items:center;"><div><strong>' +
+                    r.volunteer + '</strong><span style="margin-left:8px;font-size:12px;color:#64748b;">🏠 ' + r
+                    .housesVisited + ' ' + currentText.housesVisited +
+                    '</span><div style="font-size:12px;color:#475569;margin-top:2px;">' + (r.notes || '') +
+                    '</div></div><button class="btn btn-danger btn-sm" onclick="deleteAdminReport(\'' + r.id +
+                    '\')">🗑️</button></div></div>';
+            }
+            cont.innerHTML = html;
+        }
+
+        function filterAdminReports() {
+            renderAdminFilteredReports();
+        }
+
+        function renderAdminFullReport() {
+            var cont = document.getElementById("adminFullReports");
+            if (!cont) return;
+            var html = '<div style="background:#f8fafc;border-radius:12px;padding:12px;">';
+            html += '<h4 style="margin-bottom:8px;">📊 ' + currentText.fullReport + '</h4>';
+            html += '<div class="report-summary"><span>' + currentText.totalVisits + ':</span><strong>' + appData.visits
+                .length + '</strong></div>';
+            html += '<div class="report-summary"><span>' + currentText.totalReports + ':</span><strong>' + appData
+                .dailyReports.length + '</strong></div>';
+            html += '<div class="report-summary"><span>' + currentText.issuesLabel + ':</span><strong>' + appData.issues
+                .length + '</strong></div>';
+            html += '<div class="report-summary"><span>' + currentText.volReg + ':</span><strong>' + appData.volunteers
+                .filter(function(v) { return v.status === "approved"; }).length + '</strong></div>';
+            html += '<div class="report-summary"><span>📨 Team Messages:</span><strong>' + appData.teamMessages.length +
+                '</strong></div>';
+            html += '</div>';
+            if (appData.dailyReports.length > 0) {
+                var volReports = {};
+                for (var i = 0; i < appData.dailyReports.length; i++) {
+                    var r = appData.dailyReports[i];
+                    if (!volReports[r.volunteer]) volReports[r.volunteer] = { count: 0, houses: 0 };
+                    volReports[r.volunteer].count++;
+                    volReports[r.volunteer].houses += parseInt(r.housesVisited) || 0;
+                }
+                html += '<div style="margin-top:12px;"><strong>📊 ' + currentText.reportBy + '</strong></div>';
+                for (var key in volReports) {
+                    html += '<div class="report-summary"><span>' + key + '</span><span>🏠 ' + volReports[key].houses +
+                        ' (' + volReports[key].count + ' ' + currentText.totalReports + ')</span></div>';
+                }
+            }
+            cont.innerHTML = html;
+        }
+
+        function renderAdminTeamMessageHistory() {
+            var cont = document.getElementById("adminTeamMsgHistory");
+            if (!cont) return;
+            if (appData.teamMessages.length === 0) {
+                cont.innerHTML = '<div class="empty-state"><i class="fas fa-envelope"></i>' + currentText.noTeamMessages +
+                    '</div>';
+                return;
+            }
+            var html = '';
+            for (var i = appData.teamMessages.length - 1; i >= 0; i--) {
+                var m = appData.teamMessages[i];
+                var isBulk = m.isBulk ? ' <span class="badge-all">📢 BULK</span>' : '';
+                html += '<div class="team-msg-box" id="msg-' + m.id + '"><div><strong>👤 ' + m.memberName +
+                    '</strong> <span style="font-size:11px;color:#64748b;">' + m.timestamp + '</span>' + isBulk;
+              html += '</div>' +
+    '<div style="font-size:13px;margin-top:4px;">' + m.message + '</div>' +
+    '<div class="sent">✅ Sent by: ' + m.sentBy + ' | 📱 ' + m.memberMobile + '</div>' +
+    '<div style="text-align:right;margin-top:8px;">' +
+    '<button type="button" onclick="deleteTeamMessage(\'' + m.id + '\')" style="display:block;margin:10px 0 0 auto;padding:8px 12px;background:#dc2626;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;">🗑️ Remove Message</button>' +
+    '</div></div>';  
+            }
+            cont.innerHTML = html;
+        }
+
+        function deleteTeamMessage(id) {
+            if (confirm(currentText.confirmDelete)) {
+                deleteItem('teamMessages', id);
+            }
+        }
+
+        function renderEvents() {
+            var pubCont = document.getElementById("publicEventsList");
+            if (pubCont) {
+                if (appData.events.length === 0) {
+                    pubCont.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-alt"></i>' + currentText
+                        .noEvents + '</div>';
+                } else {
+                    var html = '';
+                    for (var i = appData.events.length - 1; i >= 0; i--) {
+                        var e = appData.events[i];
+                        html += '<div class="event-card"><b>' + e.title + '</b><br>📅 ' + e.date +
+                            '<br><span style="font-size:13px;color:#64748b;">' + (e.desc || '') + '</span></div>';
+                    }
+                    pubCont.innerHTML = html;
+                }
+            }
+            var adminCont = document.getElementById("adminEventsList");
+            if (adminCont && isAdmin) {
+                if (appData.events.length === 0) {
+                    adminCont.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-alt"></i>' + currentText
+                        .noEvents + '</div>';
+                } else {
+                    var html = '';
+                    for (var i = appData.events.length - 1; i >= 0; i--) {
+                        var e = appData.events[i];
+                        html += '<div class="event-card" style="display:flex;justify-content:space-between;align-items:center;"><div><b>' +
+                            e.title + '</b> 📅 ' + e.date +
+                            '</div><button class="btn btn-danger btn-sm" onclick="deleteEvent(\'' + e.id +
+                            '\')">🗑️ ' + currentText.delete + '</button></div>';
+                    }
+                    adminCont.innerHTML = html;
+                }
+            }
+        }
+
+        function deleteEvent(id) {
+            if (confirm(currentText.confirmDelete)) {
+                deleteItem('events', id);
+            }
+        }
+
+        // GALLERY
+        function renderGallery() {
+            var pubCont = document.getElementById("publicGalleryEvents");
+            var adminImgCont = document.getElementById("adminGalleryGrid");
+            var adminVidCont = document.getElementById("adminVideoGrid");
+
+            if (pubCont) {
+                var html = '';
+                html += '<h4 style="margin-top:0;">📅 Events</h4>';
+                if (appData.events.length === 0) {
+                    html += '<div class="empty-state" style="padding:10px;"><i class="fas fa-calendar-alt"></i>' +
+                        currentText.noEvents + '</div>';
+                } else {
+                    for (var i = appData.events.length - 1; i >= 0; i--) {
+                        var e = appData.events[i];
+                        html += '<div class="event-card"><b>' + e.title + '</b><br>📅 ' + e.date +
+                            '<br><span style="font-size:13px;color:#64748b;">' + (e.desc || '') + '</span></div>';
+                    }
+                }
+
+                var images = appData.gallery.filter(function(g) { return g.type === 'image'; });
+                html += '<h4 style="margin-top:14px;">🖼️ Photos</h4>';
+                if (images.length === 0) {
+                    html += '<div class="empty-state" style="padding:10px;"><i class="fas fa-image"></i>No photos</div>';
+                } else {
+                    html += '<div class="gallery-grid">';
+                    for (var i = 0; i < images.length; i++) {
+                        var g = images[i];
+                        html += '<div class="gallery-item"><img src="' + g.data + '" alt="' + (g.caption || '') +
+                            '" onclick="openLightbox(\'' + g.data + '\',\'image\')"></div>';
+                    }
+                    html += '</div>';
+                }
+
+                var videos = appData.gallery.filter(function(g) { return g.type === 'video'; });
+                html += '<h4 style="margin-top:14px;">🎬 Videos</h4>';
+                if (videos.length === 0) {
+                    html += '<div class="empty-state" style="padding:10px;"><i class="fas fa-video"></i>No videos</div>';
+                } else {
+                    html += '<div class="video-grid">';
+                    for (var i = 0; i < videos.length; i++) {
+                        var g = videos[i];
+                        html += '<div><video src="' + g.data +
+                            '" controls onclick="event.stopPropagation();"></video><div style="font-size:10px;color:#64748b;text-align:center;padding:2px;">' +
+                            (g.caption || '') + '</div></div>';
+                    }
+                    html += '</div>';
+                }
+                pubCont.innerHTML = html;
+            }
+
+            var images = appData.gallery.filter(function(g) { return g.type === 'image'; });
+            if (adminImgCont && isAdmin) {
+                if (images.length === 0) {
+                    adminImgCont.innerHTML =
+                    '<div class="empty-state" style="grid-column:1/4;"><i class="fas fa-image"></i>No images</div>';
+                } else {
+                    var html = '';
+                    for (var i = 0; i < images.length; i++) {
+                        var g = images[i];
+                        html += '<div class="gallery-item"><img src="' + g.data + '" alt="' + (g.caption || '') +
+                            '"><button class="delete-btn" onclick="deleteGalleryItem(\'' + g.id +
+                            '\')">✕</button></div>';
+                    }
+                    adminImgCont.innerHTML = html;
+                }
+            }
+
+            var videos = appData.gallery.filter(function(g) { return g.type === 'video'; });
+            if (adminVidCont && isAdmin) {
+                if (videos.length === 0) {
+                    adminVidCont.innerHTML =
+                    '<div class="empty-state" style="grid-column:1/3;"><i class="fas fa-video"></i>No videos</div>';
+                } else {
+                    var html = '';
+                    for (var i = 0; i < videos.length; i++) {
+                        var g = videos[i];
+                        html += '<div style="position:relative;"><video src="' + g.data +
+                            '" controls></video><button class="delete-btn" style="position:absolute;top:4px;right:4px;" onclick="deleteGalleryItem(\'' +
+                            g.id + '\')">✕</button><div style="font-size:10px;color:#64748b;text-align:center;">' +
+                            (g.caption || '') + '</div></div>';
+                    }
+                    adminVidCont.innerHTML = html;
+                }
+            }
+        }
+
+        function deleteGalleryItem(id) {
+            if (confirm(currentText.confirmDelete)) {
+                // Also delete from Storage if Firebase
+                var item = appData.gallery.find(function(g) { return g.id === id; });
+                if (item && useFirebase && storage && item.data && item.data.startsWith('https://firebasestorage.googleapis.com')) {
+                    try {
+                        var storageRef = storage.refFromURL(item.data);
+                        storageRef.delete().catch(function(e) { console.warn('Storage delete error:', e); });
+                    } catch (e) {}
+                }
+                deleteItem('gallery', id);
+            }
+        }
+
+        // LIGHTBOX
+        function openLightbox(src, type) {
+            var lb = document.getElementById("lightbox");
+            var img = document.getElementById("lightboxImg");
+            var video = document.getElementById("lightboxVideo");
+            if (!lb) return;
+            img.style.display = 'none';
+            video.style.display = 'none';
+            if (type === 'image') {
+                img.src = src;
+                img.style.display = 'block';
+                video.pause();
+            } else if (type === 'video') {
+                video.src = src;
+                video.style.display = 'block';
+                video.load();
+                video.play();
+                img.style.display = 'none';
+            }
+            lb.classList.add('active');
+        }
+
+        function closeLightbox() {
+            var lb = document.getElementById("lightbox");
+            var video = document.getElementById("lightboxVideo");
+            if (video) {
+                video.pause();
+                video.src = '';
+            }
+            if (lb) lb.classList.remove('active');
+        }
+
+        function updateAdminStats() {
+            var total = 5000;
+            var covered = 0;
+for (var i = 0; i < appData.dailyReports.length; i++) {
+    covered += Number(appData.dailyReports[i].housesVisited) || 0;
+}            
+            var followups = appData.visits.filter(function(v) { return (v.status || "").includes("Follow-up"); }).length;
+            var totalHouses = document.getElementById("adminTotalHouses");
+            var coveredHouses = document.getElementById("adminCoveredHouses");
+            var followupCount = document.getElementById("adminFollowupCount");
+            var issueCount = document.getElementById("adminIssueCount");
+            var coverageFill = document.getElementById("adminCoverageFill");
+            var coverageText = document.getElementById("adminCoverageText");
+
+            if (totalHouses) totalHouses.innerText = total;
+            if (coveredHouses) coveredHouses.innerText = covered;
+            if (followupCount) followupCount.innerText = followups;
+            if (issueCount) issueCount.innerText = appData.issues.length;
+            var percent = total > 0 ? Math.min((covered / total) * 100, 100) : 0;
+            if (coverageFill) coverageFill.style.width = percent + "%";
+            if (coverageText) coverageText.innerHTML = currentText.coverage + ': ' + percent.toFixed(1) + '% (' + covered +
+                '/' + total + ')';
+        }
+
+        // ============================================================
+        // NAVIGATION
+        // ============================================================
+        function goToPage(pageId) {
+            if (isAdmin) return;
+            var pages = document.querySelectorAll('.page');
+            for (var i = 0; i < pages.length; i++) pages[i].classList.remove('active');
+            var selected = document.getElementById(pageId);
+            if (selected) selected.classList.add('active');
+            var navs = document.querySelectorAll('.nav-item');
+            for (var j = 0; j < navs.length; j++) {
+                navs[j].classList.remove('active');
+                if (navs[j].getAttribute('data-page') === pageId) navs[j].classList.add('active');
+            }
+        }
+
+        // ============================================================
+        // GALLERY UPLOAD (Firebase Storage)
+        // ============================================================
+        async function uploadGalleryMedia() {
+    var fileInput = document.getElementById("galleryMediaInput");
+    var caption = document.getElementById("galleryCaption").value;
+    var file = fileInput.files[0];
+
+    if (!file) {
+        alert("Please select an image or video");
+        return;
+    }
+
+    var isVideo = file.type && file.type.startsWith("video/");
+    var type = isVideo ? "video" : "image";
+
+    // Videos above 90 MB can be slow or fail on a browser upload.
+    if (isVideo && file.size > 90 * 1024 * 1024) {
+        alert("Video is too large. Please select a video smaller than 90 MB.");
+        return;
+    }
+
+    // Images above 10 MB are also blocked.
+    if (!isVideo && file.size > 10 * 1024 * 1024) {
+        alert("Image is too large. Please select an image smaller than 10 MB.");
+        return;
+    }
+
+    var uploadBtn = document.getElementById("uploadGalleryBtn");
+    if (!uploadBtn) return;
+
+    var originalText = uploadBtn.innerHTML;
+    uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+    uploadBtn.disabled = true;
+
+    try {
+        // Stops the page from loading forever if Cloudinary does not respond.
+        var timeoutPromise = new Promise(function(resolve, reject) {
+            setTimeout(function() {
+                reject(new Error("Upload timed out. Check internet connection or use a smaller video."));
+            }, 300000);
+        });
+
+        var mediaUrl = await Promise.race([
+            uploadGalleryMediaFirebase(file, caption),
+            timeoutPromise
+        ]);
+
+        addGalleryItem({
+            type: type,
+            data: mediaUrl,
+            caption: caption || ""
+        });
+
+        fileInput.value = "";
+        document.getElementById("galleryCaption").value = "";
+        alert("✅ Media uploaded successfully!");
+    } catch (error) {
+        console.error("Upload error:", error);
+        alert("❌ Upload failed: " + (error.message || error));
+    } finally {
+        uploadBtn.innerHTML = originalText;
+        uploadBtn.disabled = false;
+    }
+}
+        // ============================================================
+        // ADMIN MESSAGE SEND
+        // ============================================================
+        function adminSendTeamWhatsApp() {
+            var sel = document.getElementById("adminTeamMemberSelect");
+            var selectedValue = sel ? sel.value : 'all';
+
+            var message = document.getElementById("adminCustomMessage").value;
+            if (!message || message.trim() === '') {
+                alert("Please enter a message to send.");
+                return;
+            }
+
+            var statusDiv = document.getElementById("adminSendStatus");
+
+            if (selectedValue === 'all') {
+                var approved = appData.volunteers.filter(function(v) { return v.status === "approved"; });
+                if (approved.length === 0) {
+                    alert("No approved team members to send messages to!");
+                    return;
+                }
+
+                var sentCount = 0;
+                var firstPhone = null;
+                var firstMessage = message;
+
+                for (var i = 0; i < approved.length; i++) {
+                    var member = approved[i];
+                    var mobile = member.mobile;
+                    if (!mobile || mobile.trim() === '') continue;
+
+                    var phone = mobile.replace(/[^0-9]/g, '');
+                    if (phone.length < 10) continue;
+                    if (phone.length === 10) phone = '91' + phone;
+
+                    addTeamMessage({
+                        memberName: member.name,
+                        memberMobile: mobile,
+                        message: message,
+                        sentBy: 'Admin (Bulk)',
+                        isBulk: true,
+                        timestamp: Date.now()
+                    });
+
+                    sentCount++;
+                    if (i === 0) firstPhone = phone;
+                }
+
+                saveData();
+                if (statusDiv) {
+                    statusDiv.innerHTML = '✅ Sent to ' + sentCount + ' team members';
+                    statusDiv.style.color = '#16a34a';
+                }
+
+                if (firstPhone) {
+                    var url = 'https://wa.me/' + firstPhone + '?text=' + encodeURIComponent(firstMessage);
+                    window.open(url, '_blank');
+                }
+
+                alert('📤 ' + currentText.msgSent + '\n\nSent to ' + sentCount + ' team members.');
+                renderAll();
+                populateAdminTeamDropdown();
+                return;
+            }
+
+            var memberId = selectedValue;
+            if (!memberId) { alert("Please select a team member!"); return; }
+
+            var member = null;
+            for (var i = 0; i < appData.volunteers.length; i++) {
+                if (appData.volunteers[i].id === memberId) {
+                    member = appData.volunteers[i];
+                    break;
+                }
+            }
+
+            if (!member) { alert("Team member not found!"); return; }
+
+            var mobile = member.mobile;
+            if (!mobile || mobile.trim() === '') { alert("This team member doesn't have a mobile number."); return; }
+
+            var phone = mobile.replace(/[^0-9]/g, '');
+            if (phone.length < 10) { alert("Invalid mobile number."); return; }
+            if (phone.length === 10) phone = '91' + phone;
+
+            addTeamMessage({
+                memberName: member.name,
+                memberMobile: mobile,
+                message: message,
+                sentBy: 'Admin (Individual)',
+                isBulk: false,
+                timestamp: Date.now()
+            });
+
+            saveData();
+
+            var url = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(message);
+            window.open(url, '_blank');
+
+            if (statusDiv) {
+                statusDiv.innerHTML = '✅ ' + currentText.msgSent + ' to ' + member.name;
+                statusDiv.style.color = '#16a34a';
+            }
+
+            renderAll();
+            populateAdminTeamDropdown();
+        }
+
+        // ============================================================
+        // ADMIN ADD TEAM MEMBER
+        // ============================================================
+        function adminAddTeamMember() {
+            var name = document.getElementById("adminVolName").value;
+            var mobile = document.getElementById("adminVolMobile").value;
+            var area = document.getElementById("adminVolArea").value;
+
+            if (!name || !mobile) { alert("Please fill Name and Mobile number!"); return; }
+
+            var exists = false;
+            for (var i = 0; i < appData.volunteers.length; i++) {
+                if (appData.volunteers[i].mobile === mobile) { exists = true; break; }
+            }
+            if (exists) { alert("This mobile number is already registered!"); return; }
+
+            addVolunteer({
+                name: name,
+                mobile: mobile,
+                area: area || '',
+                status: "approved"
+            });
+
+            document.getElementById("adminVolName").value = "";
+            document.getElementById("adminVolMobile").value = "";
+            document.getElementById("adminVolArea").value = "";
+
+            alert("✅ Team member " + name + " added successfully!");
+            renderAll();
+            populateFilters();
+            populateVolunteerDropdowns();
+            populateAdminTeamDropdown();
+        }
+
+        // ============================================================
+        // SETUP
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation
+            var navItems = document.querySelectorAll('.nav-item');
+            for (var i = 0; i < navItems.length; i++) {
+                navItems[i].addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (isAdmin) return;
+                    var pageId = this.getAttribute('data-page');
+                    if (pageId) goToPage(pageId);
+                });
+            }
+
+            // Save Visit
+            document.getElementById("saveVisitBtn").addEventListener("click", function() {
+                if (isAdmin) return;
+                var houseNo = document.getElementById("houseNo").value;
+                if (!houseNo) { alert("Please enter house number"); return; }
+                addVisit({
+                    houseNo: houseNo,
+                    familyName: document.getElementById("familyName").value,
+                    mobile: document.getElementById("mobileD2D").value,
+                    status: document.getElementById("visitStatus").value,
+                    volunteer: document.getElementById("volunteerNameD2D").value,
+                    date: new Date().toISOString()
+                });
+                document.getElementById("houseNo").value = "";
+                document.getElementById("familyName").value = "";
+                document.getElementById("mobileD2D").value = "";
+                alert(currentText.savedMsg);
+            });
+
+            // Save Issue
+            document.getElementById("saveIssueBtn").addEventListener("click", function() {
+                if (isAdmin) return;
+                var name = document.getElementById("issuePersonName").value;
+                if (!name) { alert("Please enter your name"); return; }
+                addIssue({
+                    name: name,
+                    mobile: document.getElementById("issuePersonMobile").value,
+                    area: document.getElementById("issueArea").value,
+                    category: document.getElementById("issueCategory").value,
+                    desc: document.getElementById("issueDesc").value
+                });
+                document.getElementById("issuePersonName").value = "";
+                document.getElementById("issuePersonMobile").value = "";
+                document.getElementById("issueArea").value = "";
+                document.getElementById("issueDesc").value = "";
+                alert(currentText.submittedMsg);
+            });
+
+            // Public Volunteer Registration
+            document.getElementById("addVolunteerRegBtn").addEventListener("click", function() {
+                if (isAdmin) return;
+                var name = document.getElementById("volNameReg").value;
+                var mobile = document.getElementById("volMobileReg").value;
+                if (!name || !mobile) { alert("Please fill volunteer details"); return; }
+                var exists = false;
+                for (var i = 0; i < appData.volunteers.length; i++) {
+                    if (appData.volunteers[i].mobile === mobile) { exists = true; break; }
+                }
+                if (exists) { alert("This mobile number is already registered!"); return; }
+                addVolunteer({
+                    name: name,
+                    mobile: mobile,
+                    area: document.getElementById("volAreaReg").value,
+                    status: "pending"
+                });
+                document.getElementById("volNameReg").value = "";
+                document.getElementById("volMobileReg").value = "";
+                document.getElementById("volAreaReg").value = "";
+                alert("Registration submitted! Waiting for admin approval.");
+                populateFilters();
+                populateVolunteerDropdowns();
+            });
+
+            // Submit Daily Report
+            document.getElementById("submitDailyReportBtn").addEventListener("click", function() {
+                if (isAdmin) return;
+                var vol = document.getElementById("dailyVolName").value;
+                var houses = document.getElementById("housesVisitedDaily").value;
+                if (!vol || !houses) { alert("Please fill report details"); return; }
+                addDailyReport({
+                    volunteer: vol,
+                    housesVisited: houses,
+                    notes: document.getElementById("dailyNotes").value
+                });
+                document.getElementById("housesVisitedDaily").value = "";
+                document.getElementById("dailyNotes").value = "";
+                alert(currentText.report);
+            });
+
+            // Export CSV
+            document.getElementById("exportVisitsBtn").addEventListener("click", function() {
+                if (isAdmin) return;
+                var csv = "House No,Family,Mobile,Status,Volunteer\n";
+                for (var i = 0; i < appData.visits.length; i++) {
+                    var v = appData.visits[i];
+                    csv += '"' + v.houseNo + '","' + v.familyName + '","' + v.mobile + '","' + v.status + '","' + v
+                        .volunteer + '"\n';
+                }
+                var a = document.createElement("a");
+                a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+                a.download = "campaign_data.csv";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            });
+
+            // ADMIN: Add Team Member
+            document.getElementById("adminAddVolunteerBtn").addEventListener("click", function() {
+                if (!isAdmin) return;
+                adminAddTeamMember();
+            });
+
+            // ADMIN: Send Team Message
+            document.getElementById("adminSendTeamMsgBtn").addEventListener("click", function() {
+                if (!isAdmin) return;
+                adminSendTeamWhatsApp();
+            });
+
+            // ADMIN: Message template change
+            document.getElementById("adminMsgTemplate").addEventListener("change", function() {
+                var val = this.value;
+                var customMsg = document.getElementById("adminCustomMessage");
+                if (val === 'custom') {
+                    if (customMsg) {
+                        customMsg.value = '';
+                        customMsg.placeholder = 'Type your custom message here...';
+                    }
+                } else {
+                    if (customMsg) {
+                        customMsg.value = getAdminMessageTemplate(val);
+                    }
+                }
+            });
+
+            // Admin Login
+            document.getElementById("adminLoginBtn").addEventListener("click", loginAdmin);
+            document.getElementById("adminToggleBtn").addEventListener("click", toggleAdminLogin);
+            document.getElementById("adminLogoutBtn").addEventListener("click", logoutAdmin);
+
+            // Admin: Add Event
+            document.getElementById("addEventBtn").addEventListener("click", function() {
+                if (!isAdmin) return;
+                var title = document.getElementById("eventTitle").value;
+                var date = document.getElementById("eventDate").value;
+                var desc = document.getElementById("eventDesc").value;
+                if (!title || !date) { alert("Please fill event title and date"); return; }
+                addEvent({ title: title, date: date, desc: desc });
+                document.getElementById("eventTitle").value = "";
+                document.getElementById("eventDate").value = "";
+                document.getElementById("eventDesc").value = "";
+                alert("Event added successfully!");
+            });
+
+            // Admin: Upload Gallery Media
+            document.getElementById("uploadGalleryBtn").addEventListener("click", function() {
+                if (!isAdmin) return;
+                uploadGalleryMedia();
+            });
+
+            // Language buttons
+            var langBtns = document.querySelectorAll(".lang-btn");
+            for (var i = 0; i < langBtns.length; i++) {
+                langBtns[i].addEventListener("click", function() {
+                    setLanguage(this.getAttribute("data-lang"));
+                });
+            }
+
+            // Admin password enter key
+            document.getElementById("adminPass").addEventListener("keydown", function(e) {
+                if (e.key === "Enter") loginAdmin();
+            });
+            document.getElementById("adminEmail").addEventListener("keydown", function(e) {
+                if (e.key === "Enter") loginAdmin();
+            });
+
+            // Load data
+            loadData();
+            setLanguage("en");
+
+            // If Firebase is configured and user is already logged in, load data
+            if (useFirebase && auth) {
+                var currentUser = auth.currentUser;
+                if (currentUser) {
+                    isAdmin = true;
+                    onAdminLoginSuccess();
+                }
+            }
+
+            console.log('🚀 Election Pilot ready!');
+        });
+
+        // Expose global functions
+        window.goToPage = goToPage;
+        window.approveVolunteer = approveVolunteer;
+        window.deleteVolunteer = deleteVolunteer;
+        window.deleteApprovedVolunteer = deleteApprovedVolunteer;
+        window.deleteEvent = deleteEvent;
+        window.deleteGalleryItem = deleteGalleryItem;
+        window.deleteIssue = deleteIssue;
+        window.deleteAdminReport = deleteAdminReport;
+        window.deleteVisit = deleteVisit;
+        window.filterAdminReports = filterAdminReports;
+        window.setLanguage = setLanguage;
+        window.loginAdmin = loginAdmin;
+        window.logoutAdmin = logoutAdmin;
+        window.toggleAdminLogin = toggleAdminLogin;
+        window.adminSendTeamWhatsApp = adminSendTeamWhatsApp;
+        window.adminAddTeamMember = adminAddTeamMember;
+        window.openLightbox = openLightbox;
+        window.closeLightbox = closeLightbox;
+        window.deleteTeamMessage = deleteTeamMessage;
+        window.uploadGalleryMedia = uploadGalleryMedia;
+    </script>
+</body>
+</html>
