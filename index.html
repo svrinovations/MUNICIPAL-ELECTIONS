@@ -1432,7 +1432,6 @@
 
     // Visits
     var unsubVisits = db.collection('visits')
-        .orderBy('timestamp', 'desc')
         .onSnapshot(function(snapshot) {
             var data = [];
 
@@ -1453,7 +1452,6 @@
 
     // Issues
     var unsubIssues = db.collection('issues')
-        .orderBy('timestamp', 'desc')
         .onSnapshot(function(snapshot) {
             var data = [];
 
@@ -1496,7 +1494,6 @@
 
     // Daily reports
     var unsubReports = db.collection('dailyReports')
-        .orderBy('timestamp', 'desc')
         .onSnapshot(function(snapshot) {
             var data = [];
 
@@ -1536,7 +1533,6 @@
 
     // Team messages
     var unsubMsgs = db.collection('teamMessages')
-        .orderBy('timestamp', 'desc')
         .onSnapshot(function(snapshot) {
             var data = [];
 
@@ -1556,7 +1552,6 @@
 
     // Gallery
     var unsubGallery = db.collection('gallery')
-        .orderBy('timestamp', 'desc')
         .onSnapshot(function(snapshot) {
             var data = [];
 
@@ -2105,14 +2100,12 @@ function deleteItem(collection, id) {
                 html += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:4px solid var(--accent);"><div style="display:flex;justify-content:space-between;align-items:start;"><strong>#' +
                     (i + 1) + ' - ' + issue.category + '</strong><button class="btn btn-danger btn-sm" onclick="deleteIssue(\'' +
                     issue.id + '\')">🗑️ ' + currentText.delete + '</button></div><div class="issue-detail"><i class="fas fa-user"></i> <strong>' +
-                    currentText.name + ':</strong> ' + issue.name + '</div><div class="issue-detail"><i class="fas fa-phone"></i> <strong>' +
-                    currentText.mobile + ':</strong> ' + (issue.mobile || 'N/A') +
-                    '</div><div class="issue-detail"><i class="fas fa-map-marker-alt"></i> <strong>' + currentText
-                    .area + ':</strong> ' + (issue.area || 'N/A') +
-                    '</div><div class="issue-detail"><i class="fas fa-tag"></i> <strong>' + currentText.category +
+                    'Name' + ':</strong> ' + (issue.name || issue.personName || '') + '</div><div class="issue-detail"><i class="fas fa-phone"></i> <strong>' +
+                    'Mobile' + ':</strong> ' + (issue.mobile || 'N/A') +
+                    '</div><div class="issue-detail"><i class="fas fa-map-marker-alt"></i> <strong>' + 'Area' + ':</strong> ' + (issue.area || 'N/A') +
+                    '</div><div class="issue-detail"><i class="fas fa-tag"></i> <strong>' + 'Category' +
                     ':</strong> ' + issue.category +
-                    '</div><div class="issue-detail" style="margin-top:6px;padding:8px;background:#f8fafc;border-radius:8px;"><i class="fas fa-file-alt"></i> <strong>' +
-                    currentText.description + ':</strong> ' + issue.desc + '</div></div>';
+                    '</div><div class="issue-detail" style="margin-top:6px;padding:8px;background:#f8fafc;border-radius:8px;"><i class="fas fa-file-alt"></i> <strong>' + 'Description' + ':</strong> ' + (issue.desc || issue.description || issue.issueDescription || '') + '</div></div>';
             }
             cont.innerHTML = html;
         }
@@ -2506,7 +2499,9 @@ function deleteItem(collection, id) {
 for (var i = 0; i < appData.dailyReports.length; i++) {
     covered += Number(appData.dailyReports[i].housesVisited) || 0;
 }            
-            var followups = appData.visits.filter(function(v) { return (v.status || "").includes("Follow-up"); }).length;
+            var followups = appData.visits.filter(function(v) {
+    return (v.status || "").toLowerCase().replace(/[^a-z]/g, "") === "followup";
+}).length;
             var totalHouses = document.getElementById("adminTotalHouses");
             var coveredHouses = document.getElementById("adminCoveredHouses");
             var followupCount = document.getElementById("adminFollowupCount");
